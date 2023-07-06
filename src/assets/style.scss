@@ -1,0 +1,77 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+$darkest: #21212d;
+$dark: #2c2c38;
+$light: #645fc6;
+$white: white; 
+$grey: #4e4e5a;
+
+
+
+@mixin flex-row{
+    display: flex;
+    flex-direction: row;
+}
+@mixin flex-column{
+    display: flex;
+    flex-direction: column;
+}
+
+
+// Buttons
+
+button{
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px 14px;
+    font-size: 20px;
+    border-radius: 20px;
+}
+
+.white-btn{
+    background-color: $white;
+    color: $light;
+}
+.light-purple-btn{
+    background-color: $light;
+    color: white;
+}
+.dark-purple-btn{
+    background-color: $dark;
+    color: $light;
+}
+
+// Modals
+
+.modal-container{
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 100vh;
+    width: 100%;
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    @include flex-column();
+    justify-content: center;
+    align-items: center;
+}
+
+input{
+    border: $grey solid 2px;
+    border-radius: 2px;
+    font-size: 20px;
+    padding: 10px 14px;
+    background-color: $dark;
+    color: white;
+    outline: none;
+}
+
+input::placeholder{
+    color: $grey;
+}

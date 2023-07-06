@@ -1,30 +1,51 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+    <StartingScreen @onboardcreated="addBoardToStorage" v-if="startingScreenVisible" :boardList="boards" @onboardselected="toggleVisibility" />
+    <MainScreen v-if="!startingScreenVisible" :boardList="boards"  />
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+  import StartingScreen from "./components/Screens/StartingScreen.vue";
+  import MainScreen from "./components/Screens/MainScreen.vue";
 
-nav {
-  padding: 30px;
+  export default{
+    name: "App",
+    components: {
+      StartingScreen,
+      MainScreen
+    },
+    data(){
+      return{
+        startingScreenVisible: true,
+        boards: []
+      }
+    },
+    methods: {
+      toggleVisibility(){
+        this.startingScreenVisible = !this.startingScreenVisible
+      },
+      
+      addBoardToStorage(value){
+        console.log(value)
+        this.toggleVisibility()
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+        this.boards = JSON.parse(localStorage.getItem("boards"))
+        this.boards.push(value)
+        localStorage.setItem("boards", JSON.stringify(this.boards))
 
-    &.router-link-exact-active {
-      color: #42b983;
+      }
+    },
+    mounted(){
+      if(localStorage.getItem("boards") == null){
+        localStorage.setItem("boards", JSON.stringify([]))
+      }
+
+      this.boards = JSON.parse(localStorage.getItem("boards"));
+      console.log(localStorage.boards)
     }
+
   }
-}
+</script>
+
+<style lang="scss">
+    @import "@/assets/style.scss";
 </style>
