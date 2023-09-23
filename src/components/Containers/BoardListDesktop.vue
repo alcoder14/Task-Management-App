@@ -1,7 +1,11 @@
 <template>
     <div class="boards-container">
-        <h2>All Boards ( {{ boardNumber }} )</h2>
-        <button v-for="board in boardList" :key="board" class="board-btn"> <font-awesome-icon icon="fa-solid fa-square" class="icon" /> {{ board }}</button>
+        <div class="logo-container">
+        
+        </div>
+        <h2 class="board-number">All Boards ( {{ boardNumber }} )</h2>
+        <button v-for="board in boardList" :key="board" class="board-btn">              <font-awesome-icon icon="fa-solid fa-square" class="icon" /> {{ board }}
+        </button>
     </div>
 </template>
 
@@ -9,7 +13,7 @@
 export default {
     name: "BoardListDesktop",
     props: {
-        boardList: Array
+        boardList: Array,
     },
     data(){
         return{
@@ -33,17 +37,29 @@ export default {
         background-color: $dark;
         height: 100vh;
         @include flex-column();
+        .logo-container{
+            height: 100px;
+            @include flex-row();
+            align-items: center;
+            padding: 20px 40px;
+        }
+        .board-number{
+            color: $white;
+            margin: 0 0 20px 20px;
+        }
         .board-btn{
+            border-radius: 60px;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
             margin-bottom: 12px;
-            width: 70%;
+            width: 80%;
             font-size: 25px;
             padding: 14px;
             background-color: $light;
             color: $white;
             display: flex;
-            justify-content: center;
+            flex-direction: row;
+            justify-content: flex-start;
             align-items: center;
             .icon{
                 margin-right: 20px;

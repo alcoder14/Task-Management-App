@@ -7,7 +7,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { faSquare } from '@fortawesome/free-solid-svg-icons'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faPlus, faSquare)
+library.add(faPlus, faSquare, faTimes)
 
-createApp(App).use(router).component("font-awesome-icon", FontAwesomeIcon).mount('#app')
+import { createPinia } from 'pinia'
+const pinia = createPinia()
+
+createApp(App).use(router).use(pinia).component("font-awesome-icon", FontAwesomeIcon).mount('#app')

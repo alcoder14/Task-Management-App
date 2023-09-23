@@ -62,7 +62,20 @@ button{
     align-items: center;
 }
 
-input{
+.modal-upper-row{
+    width: 100%;
+    @include flex-row();
+    justify-content: space-between;
+    align-items: center;
+    .modal-title{
+        font-size: 20px;
+        color: $white;
+    }
+}
+
+// Inputs
+
+input, textarea{
     border: $grey solid 2px;
     border-radius: 2px;
     font-size: 20px;
@@ -70,8 +83,18 @@ input{
     background-color: $dark;
     color: white;
     outline: none;
+    border-radius: 5px;
 }
 
-input::placeholder{
+input::placeholder, textarea::placeholder{
     color: $grey;
+}
+
+.input-row{
+    @include flex-column();
+    margin: 10px 0;
+    label{
+        color: $white;
+        margin-bottom: 10px;
+    }
 }

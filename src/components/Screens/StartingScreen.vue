@@ -6,7 +6,7 @@
     <button class="new-board-btn" @click="toggleModal"> <font-awesome-icon icon="fa-solid fa-plus" /> Add New Board</button>
 
     <div class="boards-container">
-      <button v-for="board in boardList" :key="board" @click="boardSelected" > {{ board }} </button>
+      <button v-for="board in boardList" :key="board" @click="boardSelected(board)" > {{ board }} </button>
     </div>
   </div>
 
@@ -26,6 +26,7 @@ export default {
     props: {
         boardList: Array 
     },
+    emits: ['onboardcreated', 'onboardselected'],
     data(){
         return{
             modalVisible: false,
@@ -39,8 +40,8 @@ export default {
             this.toggleModal();
             this.$emit("onboardcreated", value)
         },
-        boardSelected(){
-          this.$emit("onboardselected")
+        boardSelected(boardTitle){
+          this.$emit("onboardselected", boardTitle)
         }
     },
     mounted(){
