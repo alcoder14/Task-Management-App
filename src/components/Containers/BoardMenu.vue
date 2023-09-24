@@ -4,29 +4,37 @@
         <button class="light-purple-btn" @click="toggleModal"> <font-awesome-icon icon="fa fa-plus" /> Add New Task</button>
     </nav>
 
-    <AddTask :boardTitle="this.boardTitle" v-if="addTaskVisible" @onclose="toggleModal" @ontaskadded="this.$emit('ontaskadded')" />
+    <AddTask v-if="addTaskVisible" @onclose="toggleModal" @ontaskadded="this.$emit('ontaskadded')" />
 </template>
 
 <script>
 
-
 import AddTask from '../Modals/AddTask.vue'
+import { useBoardStore } from '@/stores/boardStore'
 
 export default {
     name: "BoardMenu",
-    props: {
-        boardTitle: String
-    },
     emits: ['ontaskadded'],
     components: {
         AddTask
     },
     data(){
         return {
-            addTaskVisible: false
+            addTaskVisible: false,
+            boardStore: useBoardStore(),
+            boardTitle: ""
         }
     },
+    mounted(){
+        this.getCurrentBoard()
+        this.emitter.on("refilter", ()=>{
+            this.getCurrentBoard()
+        })
+    },
     methods: {
+        getCurrentBoard(){
+            this.boardTitle = this.boardStore.getBoard
+        },
         toggleModal(){
             this.addTaskVisible = !this.addTaskVisible
         }

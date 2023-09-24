@@ -30,12 +30,20 @@ export default {
         }
     },
     mounted(){
-        this.currentBoard = this.boardStore.getBoard
-        console.log(this.currentBoard)
+        this.getCurrentBoard()
         this.allTasks = this.tasks
         this.sortTasks()
+
+        this.emitter.on("refilter", ()=>{
+            this.getCurrentBoard()
+            this.sortTasks()
+        })
     },
     methods: {
+        getCurrentBoard(){
+            this.currentBoard = this.boardStore.getBoard
+            console.log(this.currentBoard)
+        },
         sortTasks(){
             this.todoTasks = this.allTasks.filter(task => task.status === 'todo' && task.board === this.currentBoard)
             this.doingTasks = this.allTasks.filter(task => task.status === 'doing' && task.board === this.currentBoard)

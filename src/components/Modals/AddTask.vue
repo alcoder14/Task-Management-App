@@ -36,14 +36,12 @@
 <script>
 
 import DropdownComponent from '../Elements/DropdownComponent.vue';
+import { useBoardStore } from '@/stores/boardStore';
 
 export default {
     name: "AddTask",
     components: {
         DropdownComponent
-    },
-    props: {
-        boardTitle: String
     },
     emits: ['onclose', 'ontaskadded'],
     data(){
@@ -64,16 +62,19 @@ export default {
                 status: ""
             },
             taskStorage: null,
-            formDataCopy: null
+            formDataCopy: null,
+            boardStore: useBoardStore(),
         }
     },
     mounted(){
-        this.formData.board = this.boardTitle
         this.formData.status = this.selectedStatus
+        this.changeBoard()
     },
     methods: {
+        changeBoard(){
+            this.formData.board = this.boardStore.getBoard
+        },
         addSubtask(){
-
             if(this.subtasks.length < 3){
                 this.subtasksDisabled = false
                 this.subtasks.push({text: "", done: false});
@@ -93,6 +94,7 @@ export default {
         saveTask(){
             this.formData.subtasks = this.subtasks
             this.formDataCopy = {...this.formData}
+            console.log(this.formDataCopy.board)
 
             this.taskStorage = JSON.parse(localStorage.getItem("TaskItems"));
             this.taskStorage.push(this.formDataCopy)

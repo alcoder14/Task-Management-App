@@ -5,7 +5,7 @@
         <BoardListDesktop :boardList="boardList" class="left-column" />
         <!-- Right column - board tasks and menu -->
         <div class="right-column">
-            <BoardMenu :boardTitle="selectedBoard" @ontaskadded="loadTasks" />
+            <BoardMenu @ontaskadded="loadTasks" />
             <BoardTasks :tasks="taskStorage" v-if="this.taskStorage !== null" />
         </div>
     </main>

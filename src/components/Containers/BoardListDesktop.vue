@@ -4,12 +4,15 @@
         
         </div>
         <h2 class="board-number">All Boards ( {{ boardNumber }} )</h2>
-        <button v-for="board in boardList" :key="board" class="board-btn">              <font-awesome-icon icon="fa-solid fa-square" class="icon" /> {{ board }}
+        <button v-for="board in boardList" :key="board" class="board-btn" @click="changeBoard(board)"><font-awesome-icon icon="fa-solid fa-square" class="icon" /> {{ board }}
         </button>
     </div>
 </template>
 
 <script>
+
+import { useBoardStore } from '@/stores/boardStore'
+
 export default {
     name: "BoardListDesktop",
     props: {
@@ -17,7 +20,8 @@ export default {
     },
     data(){
         return{
-            boardNumber: Number
+            boardNumber: Number,
+            boardStore: useBoardStore()
         }
     },
     mounted(){
@@ -26,6 +30,13 @@ export default {
     methods: {
         calculateBoardNumber(){
             this.boardNumber = this.boardList.length
+        },
+        changeBoard(board){
+            this.boardStore.updateSelectedBoard(board)
+
+            // Refilter tasks when board changes
+
+            this.emitter.emit("refilter");
         }
     }
 }

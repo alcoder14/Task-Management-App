@@ -14,4 +14,14 @@ library.add(faPlus, faSquare, faTimes)
 import { createPinia } from 'pinia'
 const pinia = createPinia()
 
-createApp(App).use(router).use(pinia).component("font-awesome-icon", FontAwesomeIcon).mount('#app')
+import mitt from 'mitt'
+const emitter = mitt()
+
+const app = createApp(App)
+
+app.use(router)
+app.use(pinia)
+app.component("font-awesome-icon", FontAwesomeIcon)
+
+app.config.globalProperties.emitter = emitter
+app.mount("#app")
