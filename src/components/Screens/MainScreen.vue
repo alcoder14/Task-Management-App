@@ -5,8 +5,8 @@
         <BoardListDesktop :boardList="boardList" class="left-column" />
         <!-- Right column - board tasks and menu -->
         <div class="right-column">
-            <BoardMenu @ontaskadded="loadTasks" />
-            <BoardTasks :tasks="taskStorage" v-if="this.taskStorage !== null" />
+            <BoardMenu/>
+            <BoardTasks/>
         </div>
     </main>
 </template>
@@ -27,21 +27,6 @@ export default {
     props:{
         boardList: Array,
         selectedBoard: String
-    },
-    data(){
-        return {
-            taskStorage: null
-        }
-    },
-    mounted(){
-        this.loadTasks()
-    },
-    methods: {
-        loadTasks(){
-            console.log("Loading Tasks")
-            this.taskStorage = JSON.parse(localStorage.getItem("TaskItems"))
-            console.log(this.taskStorage)
-        }
     }
 }
 </script>

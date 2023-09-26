@@ -4,10 +4,17 @@
         <h4 v-if="doneSubtasks === 0 && totalSubtasks === 0" class="subtask-metadata">No subtasks</h4>
         <h4 v-else class="subtask-metadata">{{ this.doneSubtasks }} of {{ this.totalSubtasks }} subtasks</h4>
     </div>
+    <ViewTask :taskData="taskData" v-if="editModalVisible" @closeEditModal="toggleEditModal" />
 </template>
 
 <script>
+
+import ViewTask from '../Modals/ViewTask.vue'
+
 export default {
+    components: {
+        ViewTask
+    },
     props: {
         taskData: Object,
         totalTasks: Number
@@ -28,7 +35,7 @@ export default {
             this.taskData.subtasks.forEach(subtask => subtask.done === true ? this.doneSubtasks++ : this.doneSubtasks)
         },
         toggleEditModal(){
-            console.log("here")
+            this.editModalVisible = !this.editModalVisible
         }
     }
 }

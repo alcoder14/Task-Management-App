@@ -1,7 +1,8 @@
 <template>
     <div class="modal-container" @click="closeModal($event)">
-        <form class="add-board-form">
-            <input type="text" placeholder="Board Name" class="board-name-input" v-model="inputText">
+        <form class="modal-window">
+            <h1 class="modal-title" style="margin-bottom: 20px;">Add New Board</h1>
+            <input type="text" style="margin-bottom: 20px;" placeholder="Board Name" class="board-name-input" v-model="inputText">
             <button class="white-btn" @click="confirm(inputText)">Confirm</button>
         </form>
     </div>
@@ -17,6 +18,9 @@ export default {
     },
     methods: {
         closeModal(event){
+            console.log("close")
+            console.log(event.target)
+            console.log(event.currentTarget)
             if(event.target === event.currentTarget){
                 this.$emit("onclosemodal")
             }

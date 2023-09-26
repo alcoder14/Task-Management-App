@@ -3,7 +3,7 @@
     <form class="modal-window">
 
         <div class="modal-upper-row">
-            <h1 class="modal-title">Add New Task</h1>
+            <h1 class="modal-title">Add New Task to {{ formData.board }}</h1>
             <button class="close-btn" type="button" @click="closeModal"><font-awesome-icon icon="fa fa-times"/></button>
         </div>
 
@@ -27,7 +27,7 @@
 
             <button class="white-btn" type="button" @click="addSubtask" :disabled="subtasksDisabled"> <font-awesome-icon icon="fa fa-plus"/> Add New Subtask</button>
         </div>
-        <DropdownComponent :statuses="statuses" :selected="selectedStatus" @onStatusSelected="changeStatus" />
+        <DropdownComponent :selected="selectedStatus" @onStatusSelected="changeStatus" />
         <button @click="saveTask" class="light-purple-btn" type="button">Save</button>
     </form>
   </main>
@@ -37,6 +37,8 @@
 
 import DropdownComponent from '../Elements/DropdownComponent.vue';
 import { useBoardStore } from '@/stores/boardStore';
+
+import { v4 as uuidv4 } from 'uuid'
 
 export default {
     name: "AddTask",
@@ -48,13 +50,9 @@ export default {
         return {
             subtasks: [],
             subtasksDisabled: false,
-            statuses : [
-                {name: "Todo", value: "todo"},
-                {name: "Doing", value: "doing"},
-                {name: "Done", value: "done"}
-            ],
             selectedStatus: "todo",
             formData: {
+                id: null,
                 board: "",
                 title: "",
                 description: "",
@@ -92,8 +90,11 @@ export default {
             this.formData.status = value
         },
         saveTask(){
+            this.formData.id = uuidv4()
             this.formData.subtasks = this.subtasks
             this.formDataCopy = {...this.formData}
+
+            console.log(this.formData.id)
             console.log(this.formDataCopy.board)
 
             this.taskStorage = JSON.parse(localStorage.getItem("TaskItems"));
@@ -103,6 +104,8 @@ export default {
             console.log(this.taskStorage)
 
             this.$emit('ontaskadded')
+
+            this.emitter.emit("refilterTasks")
             this.closeModal()
         },
         closeModal(){
@@ -121,23 +124,16 @@ export default {
 
 <style lang="scss" scoped>
     @import "@/assets/style.scss";
-    .modal-window{
-        width: 30%;
-        border-radius: 10px;
-        background-color: $dark;
-        padding: 30px;
-        @include flex-column();
-        .subtask-input-row{
-            width: 100%;
-            display: grid;
-            grid-template-columns: 92% 8%;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            .delete-subtask-btn{
-                color: $grey;
-                font-size: 30px;
-                background-color: $dark;
-            }
+    .subtask-input-row{
+        width: 100%;
+        display: grid;
+        grid-template-columns: 92% 8%;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        .delete-subtask-btn{
+            color: $grey;
+            font-size: 30px;
+            background-color: $dark;
         }
     }
 

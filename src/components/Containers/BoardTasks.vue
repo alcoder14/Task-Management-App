@@ -16,9 +16,6 @@ export default {
     components: {
         TaskColumn
     },
-    props: {
-        tasks: Array
-    },
     data(){
         return{
             allTasks: [],
@@ -31,11 +28,12 @@ export default {
     },
     mounted(){
         this.getCurrentBoard()
-        this.allTasks = this.tasks
+        this.getAllTasks()
         this.sortTasks()
 
-        this.emitter.on("refilter", ()=>{
+        this.emitter.on("refilterTasks", ()=>{
             this.getCurrentBoard()
+            this.getAllTasks()
             this.sortTasks()
         })
     },
@@ -43,6 +41,10 @@ export default {
         getCurrentBoard(){
             this.currentBoard = this.boardStore.getBoard
             console.log(this.currentBoard)
+        },
+        getAllTasks(){
+            this.allTasks = JSON.parse(localStorage.getItem("TaskItems"));
+            console.log(this.allTasks)
         },
         sortTasks(){
             this.todoTasks = this.allTasks.filter(task => task.status === 'todo' && task.board === this.currentBoard)

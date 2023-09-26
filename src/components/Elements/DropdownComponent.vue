@@ -10,12 +10,16 @@
 <script>
 export default {
     props: {
-        statuses: Array,
         selected: String
     },
     data(){
         return {
-            selectedStatus: null
+            selectedStatus: null,
+            statuses : [
+                {name: "Todo", value: "todo"},
+                {name: "Doing", value: "doing"},
+                {name: "Done", value: "done"}
+            ],
         }
     },
     mounted(){

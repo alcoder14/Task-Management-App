@@ -27,7 +27,7 @@ export default {
     },
     mounted(){
         this.getCurrentBoard()
-        this.emitter.on("refilter", ()=>{
+        this.emitter.on("updateBoardName", ()=>{
             this.getCurrentBoard()
         })
     },
@@ -53,5 +53,6 @@ export default {
         @include flex-row();
         align-items: center;
         justify-content: space-between;
+        border-bottom: 1px solid $grey;
     }
 </style>

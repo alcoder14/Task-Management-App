@@ -8,8 +8,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { faSquare } from '@fortawesome/free-solid-svg-icons'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faPen } from '@fortawesome/free-solid-svg-icons'
+import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faTableCellsLarge } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faPlus, faSquare, faTimes)
+library.add(faPlus, faSquare, faTimes, faPen, faCheck, faTableCellsLarge)
 
 import { createPinia } from 'pinia'
 const pinia = createPinia()

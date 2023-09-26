@@ -6,7 +6,7 @@
     <button class="new-board-btn" @click="toggleModal"> <font-awesome-icon icon="fa-solid fa-plus" /> Add New Board</button>
 
     <div class="boards-container">
-      <button v-for="board in boardList" :key="board" @click="boardSelected(board)" > {{ board }} </button>
+      <button v-for="board in boardList" :key="board" @click="boardSelected(board)" class="board-btn" > {{ board }} </button>
     </div>
   </div>
 
@@ -66,9 +66,21 @@ export default {
       .boards-container{
         width: 30%;
         display: grid;
-        grid-template-columns: 25%;
+        grid-template-columns: 29% 29% 29%;
+        row-gap: 30px;
         justify-content: space-between;
+        padding: 30px;
         background-color: $darkest;
+        border-radius: 20px;
+        margin-top: 30px;
+        border: 1px solid $light;
+        .board-btn{
+          background-color: $dark;
+          color: $white;
+        }
+        .board-btn:hover{
+          box-shadow: 1px 1px 15px 2px rgba($color: $light, $alpha: 1.0);
+        }
       }
       .new-board-btn{
         font-size: 30px;

@@ -10,7 +10,7 @@ $dark: #2c2c38;
 $light: #645fc6;
 $white: white; 
 $grey: #4e4e5a;
-
+$lightgrey: #6f6f76;
 
 
 @mixin flex-row{
@@ -60,6 +60,13 @@ button{
     @include flex-column();
     justify-content: center;
     align-items: center;
+    .modal-window{
+        width: 30%;
+        border-radius: 10px;
+        background-color: $dark;
+        padding: 30px;
+        @include flex-column();
+    }
 }
 
 .modal-upper-row{
@@ -67,10 +74,10 @@ button{
     @include flex-row();
     justify-content: space-between;
     align-items: center;
-    .modal-title{
-        font-size: 20px;
-        color: $white;
-    }
+}
+.modal-title{
+    font-size: 20px;
+    color: $white;
 }
 
 // Inputs
