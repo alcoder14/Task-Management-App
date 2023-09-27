@@ -12,7 +12,6 @@ import TaskColumn from './TaskColumn.vue';
 import { useBoardStore } from '../../stores/boardStore'
  
 export default {
-
     components: {
         TaskColumn
     },
@@ -50,6 +49,8 @@ export default {
             this.todoTasks = this.allTasks.filter(task => task.status === 'todo' && task.board === this.currentBoard)
             this.doingTasks = this.allTasks.filter(task => task.status === 'doing' && task.board === this.currentBoard)
             this.doneTasks = this.allTasks.filter(task => task.status === 'done' && task.board === this.currentBoard)
+
+            console.log(this.todoTasks)
         }
     }
 }

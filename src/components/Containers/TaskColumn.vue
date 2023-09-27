@@ -4,16 +4,21 @@
             <div class="circle" :class="circleColor"></div>
             <h1 class="task-category">{{ category }} ( {{ tasksNumber }} )</h1>
         </header>
-        <TaskCard v-for="task in tasks" :key="task.title" :taskData="task" />
+        <div v-if="tasks.length > 0">
+            <TaskCard v-for="task in tasks" :key="task.title" :taskData="task" />
+        </div>
+        <NoTasks v-else />
     </div>
 </template>
 
 <script>
 import TaskCard from '../Elements/TaskCard.vue';
+import NoTasks from '../Elements/NoTasks.vue';
 
 export default {
     components: {
-        TaskCard
+        TaskCard,
+        NoTasks
     },
     props: {
         circleColor: String,

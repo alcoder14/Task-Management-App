@@ -10,42 +10,46 @@
     </div>
   </div>
 
-  <AddBoard v-if="modalVisible" @onclosemodal="toggleModal" @onconfirm="boardAdded"/>
+  <AddBoard v-if="modalVisible" @onclosemodal="toggleModal" @boardadded="boardAdded"/>
 
 </template>
 
 <script>
 
 import AddBoard from '../Modals/AddBoard.vue';
+import { useBoardStore } from "@/stores/boardStore";
 
 export default {
     name: "StartingScreen",
     components: {
         AddBoard
     },
-    props: {
-        boardList: Array 
-    },
     emits: ['onboardcreated', 'onboardselected'],
+    mounted(){
+      this.getBoards()
+    },
     data(){
         return{
             modalVisible: false,
+            boardList: null,
+            boardStore: useBoardStore()
         }
     },
     methods: {
+        getBoards(){
+            this.boardList = JSON.parse(localStorage.getItem("boards"))
+        },
         toggleModal(){
             this.modalVisible = !this.modalVisible
         },
-        boardAdded(value){
+        boardAdded(){
             this.toggleModal();
-            this.$emit("onboardcreated", value)
+            this.$emit("onboardcreated")
         },
         boardSelected(boardTitle){
           this.$emit("onboardselected", boardTitle)
+          this.boardStore.updateSelectedBoard(boardTitle)
         }
-    },
-    mounted(){
-      console.log(this.boardList)
     }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
-    <StartingScreen @onboardcreated="addBoardToStorage" v-if="startingScreenVisible" :boardList="boards" @onboardselected="toggleVisibility" />
-    <MainScreen v-if="!startingScreenVisible" :boardList="boards" :selectedBoard="selectedBoard" />
+    <StartingScreen @onboardcreated="toggleVisibility" v-if="startingScreenVisible" @onboardselected="toggleVisibility" />
+    <MainScreen v-if="!startingScreenVisible" />
 </template>
 
 <script>
@@ -19,29 +19,13 @@
       return{
         startingScreenVisible: true,
         boards: [],
-        selectedBoard: null,
         boardStore: useBoardStore()
       }
     },
     methods: {
-      toggleVisibility(value){
-        this.selectedBoard = value
-        this.boardStore.updateSelectedBoard(value)
+      toggleVisibility(){
         this.startingScreenVisible = !this.startingScreenVisible
       },
-      
-      addBoardToStorage(value){
-        console.log(value)
-        this.toggleVisibility(value)
-
-        this.boards = JSON.parse(localStorage.getItem("boards"))
-        this.boards.push(value)
-        localStorage.setItem("boards", JSON.stringify(this.boards))
-
-        // Add to Pinia store
-        this.boardStore.updateSelectedBoard(value)
-
-      }
     },
     mounted(){
 

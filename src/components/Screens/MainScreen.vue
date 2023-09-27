@@ -2,7 +2,7 @@
     <!-- Main Screen -->
     <main>
         <!-- Left column - board navigation -->
-        <BoardListDesktop :boardList="boardList" class="left-column" />
+        <BoardListDesktop class="left-column" />
         <!-- Right column - board tasks and menu -->
         <div class="right-column">
             <BoardMenu/>
@@ -24,10 +24,6 @@ export default {
         BoardMenu,
         BoardTasks
     },
-    props:{
-        boardList: Array,
-        selectedBoard: String
-    }
 }
 </script>
 

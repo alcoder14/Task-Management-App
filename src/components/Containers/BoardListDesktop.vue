@@ -4,7 +4,7 @@
             <img src="../../assets/logo.png" alt="Logo">
         </div>
         <h2 class="board-number">All Boards ( {{ boardNumber }} )</h2>
-        <button v-for="board in boardListCopy" :key="board" class="board-btn" @click="changeBoard(board)"><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board }}
+        <button v-for="board in boardList" :key="board" class="board-btn" @click="changeBoard(board)"><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board }}
         </button>
         <button class="add-new-board-btn" @click="toggleAddBoardModal">
             <font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> 
@@ -15,7 +15,7 @@
         </button>
     </div>
 
-    <AddBoard v-if="addBoardVisible" @onclosemodal="toggleAddBoardModal"/>
+    <AddBoard v-if="addBoardVisible" @onclosemodal="toggleAddBoardModal" @boardadded="refreshBoardList"/>
 </template>
 
 <script>
@@ -28,24 +28,27 @@ export default {
     components: {
         AddBoard
     },
-    props: {
-        boardList: Array,
-    },
     data(){
         return{
             boardNumber: Number,
             boardStore: useBoardStore(),
-            boardListCopy: null,
             buttons: null,
-            addBoardVisible: false
+            addBoardVisible: false,
+            boardList: null
         }
     },
     mounted(){
-        this.boardListCopy = this.boardList
-        this.paintSelectedBtn(this.boardStore.getBoard)
+        this.getBoardList()
+        this.$nextTick(() => {
+            this.paintSelectedBtn(this.boardStore.getBoard)
+        })
         this.calculateBoardNumber()
     },
     methods: {
+        getBoardList(){
+            this.boardList = JSON.parse(localStorage.getItem("boards"))
+            console.log(this.boardList)
+        },
         calculateBoardNumber(){
             this.boardNumber = this.boardList.length
         },
@@ -62,8 +65,18 @@ export default {
         paintSelectedBtn(board){
             console.log(board)
             this.buttons = Array.from(document.querySelectorAll(".board-btn"))
+            console.log(this.buttons)
 
             this.buttons.forEach(button => button.innerText === board ? button.classList.add("purple") : button.classList.remove("purple"))
+        },
+        refreshBoardList(boardName){
+            this.getBoardList()
+            this.calculateBoardNumber()
+            this.changeBoard(boardName)
+            this.$nextTick(() => {
+                this.paintSelectedBtn(boardName)
+            })
+            this.toggleAddBoardModal()
         },
         toggleAddBoardModal(){
             this.addBoardVisible = !this.addBoardVisible

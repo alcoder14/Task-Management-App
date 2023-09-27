@@ -9,24 +9,35 @@
 </template>
 
 <script>
+
+import { useBoardStore } from "@/stores/boardStore";
+
 export default {
     name: "AddBoard",
     data(){
         return{
-            inputText: ""
+            inputText: "",
+            boardList: null,
+            boardStore: useBoardStore()
         }
     },
     methods: {
         closeModal(event){
-            console.log("close")
-            console.log(event.target)
-            console.log(event.currentTarget)
             if(event.target === event.currentTarget){
                 this.$emit("onclosemodal")
             }
+            
         },
         confirm(value){
-            this.$emit("onconfirm", value)
+            console.log(value)
+
+            this.boardList = JSON.parse(localStorage.getItem("boards"))
+            this.boardList.push(value)
+            localStorage.setItem("boards", JSON.stringify(this.boardList))
+
+            this.boardStore.updateSelectedBoard(value)
+
+            this.$emit("boardadded", value)
         }
     }
 }

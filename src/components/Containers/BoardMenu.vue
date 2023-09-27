@@ -33,6 +33,7 @@ export default {
     },
     methods: {
         getCurrentBoard(){
+            console.log("hello there")
             this.boardTitle = this.boardStore.getBoard
         },
         toggleModal(){
