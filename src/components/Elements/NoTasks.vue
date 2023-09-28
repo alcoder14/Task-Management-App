@@ -27,4 +27,10 @@ export default {
         }
     }
 
+    @media(max-width: 1250px){
+        .container .text{
+            font-size: 26px;
+        }
+    }
+
 </style>

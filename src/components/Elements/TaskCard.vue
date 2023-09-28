@@ -61,4 +61,14 @@ export default {
             font-size: 18px;
         }
     }
+    @media(max-width: 1250px){
+        .task-container{
+            .task-title{
+            font-size: 26px;
+        }
+            .subtask-metadata{
+                font-size: 16px;
+            }
+        }
+    }
 </style>

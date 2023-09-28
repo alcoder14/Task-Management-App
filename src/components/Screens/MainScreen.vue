@@ -33,4 +33,9 @@ export default {
         display: grid;
         grid-template-columns: 20% 80%;
     }
+    @media(max-width: 1675px){
+        main{
+            grid-template-columns: 100%;
+        }
+    }
 </style>

@@ -1,6 +1,9 @@
 <template>
     <nav class="navigation">
-        <h1 class="board-title">{{ boardTitle }}</h1>
+        <div class="left-side"> 
+            <font-awesome-icon icon="fa fa-bars" class="burger-icon" @click="this.emitter.emit('showHiddenBoardList')" />
+            <h1 class="board-title">{{ boardTitle }}</h1>
+        </div>
         <button class="light-purple-btn" @click="toggleModal"> <font-awesome-icon icon="fa fa-plus" /> Add New Task</button>
     </nav>
 
@@ -55,5 +58,20 @@ export default {
         align-items: center;
         justify-content: space-between;
         border-bottom: 1px solid $grey;
+    }
+    .left-side{
+        @include flex-row();
+        align-items: center;
+        .burger-icon{
+            font-size: 30px;
+            cursor: pointer;
+            margin-right: 20px;
+            display: none;
+        }
+    }
+    @media(max-width: 1675px){
+        .left-side .burger-icon{
+            display: block;
+        }
     }
 </style>

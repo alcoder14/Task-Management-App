@@ -1,5 +1,6 @@
 <template>
-    <div class="boards-container">
+    <div class="boards-container" v-if="boardListVisible === true">
+        <button class="close-btn" @click="closeBoardList"><font-awesome-icon icon="fa fa-times" /></button>
         <div class="logo-container">
             <img src="../../assets/logo.png" alt="Logo">
         </div>
@@ -7,7 +8,6 @@
         <button v-for="board in boardList" :key="board" class="board-btn" @click="changeBoard(board)"><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board }}
         </button>
         <button class="add-new-board-btn" @click="toggleAddBoardModal">
-            <font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> 
             <div class="create-board-text">
                 <font-awesome-icon icon="fa-solid fa-plus" class="icon" />
                 Create new board
@@ -34,15 +34,30 @@ export default {
             boardStore: useBoardStore(),
             buttons: null,
             addBoardVisible: false,
-            boardList: null
+            boardList: null,
+            //
+            boardListVisible: true,
+            smallScreenBoardList: false,
         }
     },
     mounted(){
+        // FUNCTIONALITY
         this.getBoardList()
         this.$nextTick(() => {
             this.paintSelectedBtn(this.boardStore.getBoard)
         })
         this.calculateBoardNumber()
+
+        // RESPONSIVENESS
+        this.toggleVisibility()
+        window.addEventListener("resize", this.toggleVisibility)
+        this.emitter.on('showHiddenBoardList', ()=>{
+            this.boardListVisible = true
+            this.smallScreenBoardList = true
+            this.$nextTick(() => {
+                this.paintSelectedBtn(this.boardStore.getBoard)
+            })
+        })
     },
     methods: {
         getBoardList(){
@@ -61,6 +76,7 @@ export default {
             this.emitter.emit("updateBoardName")
 
             this.paintSelectedBtn(board)
+            this.closeBoardList()
         },
         paintSelectedBtn(board){
             console.log(board)
@@ -80,6 +96,27 @@ export default {
         },
         toggleAddBoardModal(){
             this.addBoardVisible = !this.addBoardVisible
+        },
+        toggleVisibility(){
+            if(window.innerWidth > 1675){
+
+                this.boardListVisible = true
+                this.smallScreenBoardList = false
+                this.paintSelectedBtn(this.boardStore.getBoard)
+
+            } else if (window.innerWidth <= 1675 && this.smallScreenBoardList){
+
+                this.boardListVisible = true
+                
+            } else {
+                this.boardListVisible = false
+            }
+        },
+        closeBoardList(){
+            if(window.innerWidth <= 1675){
+                this.boardListVisible = false
+                this.smallScreenBoardList = false
+            }
         }
     }
 }
@@ -92,6 +129,9 @@ export default {
         border-right: 1px solid $grey;
         height: 100vh;
         @include flex-column();
+        .close-btn{
+            display: none;
+        }
         .logo-container{
             height: 10vh;
             @include flex-row();
@@ -113,8 +153,7 @@ export default {
             font-size: 22px;
             padding: 14px 34px;
             background-color: $dark;
-            display: flex;
-            flex-direction: row;
+            @include flex-row()
         }
         .board-btn{
             color: $lightgrey;
@@ -135,4 +174,28 @@ export default {
             color: $white;
         }
     }
+    
+    @media(max-width: 1675px){
+        .boards-container{
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            .close-btn{
+                display: block;
+            }
+            .logo-container{
+                display: none;
+            }
+            .board-btn, .add-new-board-btn{
+                width: 20%;
+                @include flex-row();
+            }
+        }
+    }
+    
 </style>
