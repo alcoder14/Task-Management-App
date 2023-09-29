@@ -5,9 +5,46 @@
             <img src="../../assets/logo.png" alt="Logo">
         </div>
         <h2 class="board-number">All Boards ( {{ boardNumber }} )</h2>
-        <button v-for="board in boardList" :key="board" class="board-btn" @click="changeBoard(board)"><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board }}
-        </button>
-        <button class="add-new-board-btn" @click="toggleAddBoardModal">
+
+        <div class="board-btn-container" v-for="board in boardList" :key="board">
+
+            <!-- Editing boards is not enabled -->
+
+            <button v-if="!editBoardEnabled" class="board-btn" :class="{'purple': board === boardStore.getBoard}" @click="changeBoard(board)"><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board }}
+            </button>
+
+            <!-- Editing boards is enabled - render input only on current board -->
+            
+            <button v-if="editBoardEnabled && board === boardStore.getBoard" class="board-btn purple" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> <input type="text" v-model="boardName" class="input-boardname">
+            </button>
+
+            <button v-else-if="editBoardEnabled && board !== boardStore.getBoard" class="board-btn" :disabled="disableButtons" @click="changeBoard(board)" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board }}
+            </button>
+
+            <!-- Tools -->
+
+            <div class="board-tools-container" v-if="board === boardStore.getBoard">
+
+                <!-- Render edit and trash icons if board is not being edited -->
+
+                <button v-if="!editBoardEnabled" class="update-board tool-btn" @click="editBoard(board)"><font-awesome-icon icon="fa fa-pen"/></button>
+
+                <button v-if="!editBoardEnabled" class="delete-board tool-btn">
+                    <font-awesome-icon icon="fa fa-trash" />
+                </button>
+
+                <!-- Render check and x icons if board is being edited -->
+
+                <button v-if="editBoardEnabled" class="confirm-update-board tool-btn" @click="confirmEditBoard()">
+                    <font-awesome-icon icon="fa fa-check" />
+                </button>
+
+                <button v-if="editBoardEnabled" @click="discardEditBoard()" class="discard-update-board tool-btn" ><font-awesome-icon icon="fa fa-times" /></button>
+
+            </div>
+        </div>
+
+        <button class="add-new-board-btn" @click="toggleAddBoardModal" :disabled="disableButtons">
             <div class="create-board-text">
                 <font-awesome-icon icon="fa-solid fa-plus" class="icon" />
                 Create new board
@@ -32,12 +69,15 @@ export default {
         return{
             boardNumber: Number,
             boardStore: useBoardStore(),
+            boardName: null,
             buttons: null,
+            disableButtons: false,
             addBoardVisible: false,
             boardList: null,
-            //
             boardListVisible: true,
             smallScreenBoardList: false,
+            tasks: null,
+            editBoardEnabled: false
         }
     },
     mounted(){
@@ -97,6 +137,53 @@ export default {
         toggleAddBoardModal(){
             this.addBoardVisible = !this.addBoardVisible
         },
+
+        // EDITING BOARD NAMES 
+
+        // this fires when edit icon is clicked
+        editBoard(oldBoardName){
+            this.boardName = oldBoardName
+            this.disableButtons = true
+            this.toggleEditBoardName()
+        },
+        // this fires when check icon is clicked
+        confirmEditBoard(){
+            console.log(this.boardList.indexOf(this.boardStore.getBoard))
+        },
+        // this fires when times icon is clicked
+        discardEditBoard(){
+            console.log("Here")
+            this.boardName = ""
+            this.disableButtons = false
+            this.toggleEditBoardName()
+        },
+        // Switch between text and input 
+        toggleEditBoardName(){
+            this.editBoardEnabled = !this.editBoardEnabled
+        },
+
+        // DELETE BOARDS
+        deleteBoard(boardName){
+            // Delete board
+            this.boardList = this.boardList.filter(board => board !== boardName)
+            localStorage.setItem("boards", JSON.stringify(this.boardList))
+
+            // Delete tasks associated with board
+            this.tasks = JSON.parse(localStorage.getItem("TaskItems"))
+            this.tasks = this.tasks.filter(task => task.board !== boardName)
+            localStorage.setItem("TaskItems", JSON.stringify(this.tasks))
+
+            this.autoSelectBoard()
+        },
+
+
+        autoSelectBoard(){
+            this.getBoardList()
+            this.calculateBoardNumber()
+            this.changeBoard(this.boardList[0])
+            this.paintSelectedBtn(this.boardList[0])
+        },
+
         toggleVisibility(){
             if(window.innerWidth > 1675){
 
@@ -144,16 +231,48 @@ export default {
             margin: 30px 0 20px 34px;
         }
 
+        .board-btn-container{
+            @include flex-row();
+            align-items: center;
+            width: 80%;
+            margin-bottom: 12px;
+            .board-tools-container{
+                @include flex-row();
+                width: 20%;
+            }
+            .input-boardname{
+                width: 100%;
+                font-size: 14px;
+                padding: 4px;
+            }
+            .tool-btn{
+                padding: 5px 10px 5px 10px;
+                justify-self: center;
+                font-size: 18px;
+                border-radius: 0;
+                transform: translateX(-10px);
+            }
+            .update-board, .confirm-update-board{
+                padding-left: 20px;
+            }
+            .delete-board, .discard-update-board{
+                border-top-right-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+        }
+
         .board-btn, .add-new-board-btn{
+            cursor: pointer;
             border-radius: 60px;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
-            margin-bottom: 12px;
             width: 80%;
             font-size: 22px;
             padding: 14px 34px;
             background-color: $dark;
-            @include flex-row()
+            @include flex-row();
+            z-index: 10;
+
         }
         .board-btn{
             color: $lightgrey;
