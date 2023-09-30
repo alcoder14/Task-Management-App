@@ -15,7 +15,7 @@
 
             <!-- Editing boards is enabled - render input only on current board -->
             
-            <button v-if="editBoardEnabled && board === boardStore.getBoard" class="board-btn purple" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> <input type="text" v-model="boardName" class="input-boardname">
+            <button v-if="editBoardEnabled && board === boardStore.getBoard" class="board-btn purple" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> <input type="text" v-model="newBoardName" class="input-boardname">
             </button>
 
             <button v-else-if="editBoardEnabled && board !== boardStore.getBoard" class="board-btn" :disabled="disableButtons" @click="changeBoard(board)" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board }}
@@ -29,13 +29,13 @@
 
                 <button v-if="!editBoardEnabled" class="update-board tool-btn" @click="editBoard(board)"><font-awesome-icon icon="fa fa-pen"/></button>
 
-                <button v-if="!editBoardEnabled" class="delete-board tool-btn">
+                <button v-if="!editBoardEnabled" class="delete-board tool-btn" @click="deleteBoard(board)">
                     <font-awesome-icon icon="fa fa-trash" />
                 </button>
 
                 <!-- Render check and x icons if board is being edited -->
 
-                <button v-if="editBoardEnabled" class="confirm-update-board tool-btn" @click="confirmEditBoard()">
+                <button v-if="editBoardEnabled" class="confirm-update-board tool-btn" @click="confirmEditBoard(this.newBoardName)">
                     <font-awesome-icon icon="fa fa-check" />
                 </button>
 
@@ -69,7 +69,7 @@ export default {
         return{
             boardNumber: Number,
             boardStore: useBoardStore(),
-            boardName: null,
+            newBoardName: null,
             buttons: null,
             disableButtons: false,
             addBoardVisible: false,
@@ -77,6 +77,7 @@ export default {
             boardListVisible: true,
             smallScreenBoardList: false,
             tasks: null,
+            tasksCopy: null,
             editBoardEnabled: false
         }
     },
@@ -142,18 +143,49 @@ export default {
 
         // this fires when edit icon is clicked
         editBoard(oldBoardName){
-            this.boardName = oldBoardName
+            this.newBoardName = oldBoardName
             this.disableButtons = true
             this.toggleEditBoardName()
         },
         // this fires when check icon is clicked
-        confirmEditBoard(){
-            console.log(this.boardList.indexOf(this.boardStore.getBoard))
+        confirmEditBoard(newBoardName){
+
+            // Rename boards with new name in task objects 
+            this.tasks = JSON.parse(localStorage.getItem("TaskItems"))
+            console.log(this.tasks)
+            console.log(newBoardName)
+
+            this.tasks.forEach((task) => {
+                if(task.board === this.boardStore.getBoard){
+                    task.board = newBoardName
+                }
+            })
+
+            console.log(this.tasks)
+
+            localStorage.setItem("TaskItems", JSON.stringify(this.tasks))
+            
+            // Update boards list
+            this.boardList[this.boardList.indexOf(this.boardStore.getBoard)] = newBoardName
+            localStorage.setItem("boards", JSON.stringify(this.boardList))
+
+            // Set new current board
+            this.boardStore.updateSelectedBoard(newBoardName)
+
+            // Refilter tasks and update board name in menu
+            this.emitter.emit("refilterTasks")
+            this.emitter.emit("updateBoardName")
+
+            // Close board editor
+            this.discardEditBoard()
+
+        
+
         },
         // this fires when times icon is clicked
         discardEditBoard(){
             console.log("Here")
-            this.boardName = ""
+            this.newBoardName = ""
             this.disableButtons = false
             this.toggleEditBoardName()
         },
@@ -230,7 +262,6 @@ export default {
             color: $white;
             margin: 30px 0 20px 34px;
         }
-
         .board-btn-container{
             @include flex-row();
             align-items: center;
@@ -239,26 +270,34 @@ export default {
             .board-tools-container{
                 @include flex-row();
                 width: 20%;
+                .tool-btn{
+                    padding: 5px 10px 5px 10px;
+                    justify-self: center;
+                    font-size: 18px;
+                    border-radius: 0;
+                    transform: translateX(-10px);
+                    background-color: $darkest;
+                    color: $lightgrey;
+                    transition: 0.3s all;
+                }
+                .tool-btn:hover{
+                    background-color: $light;
+                    color: $white;
+                }
+                .update-board, .confirm-update-board{
+                    padding-left: 20px;
+                }
+                .delete-board, .discard-update-board{
+                    border-top-right-radius: 10px;
+                    border-bottom-right-radius: 10px;
+                }
             }
             .input-boardname{
                 width: 100%;
                 font-size: 14px;
                 padding: 4px;
             }
-            .tool-btn{
-                padding: 5px 10px 5px 10px;
-                justify-self: center;
-                font-size: 18px;
-                border-radius: 0;
-                transform: translateX(-10px);
-            }
-            .update-board, .confirm-update-board{
-                padding-left: 20px;
-            }
-            .delete-board, .discard-update-board{
-                border-top-right-radius: 10px;
-                border-bottom-right-radius: 10px;
-            }
+
         }
 
         .board-btn, .add-new-board-btn{
@@ -287,7 +326,6 @@ export default {
             align-items: center;
             color: $light;
         }
-
         .purple {
             background-color: $light;
             color: $white;
@@ -311,8 +349,13 @@ export default {
                 display: none;
             }
             .board-btn, .add-new-board-btn{
-                width: 20%;
                 @include flex-row();
+            }
+            .board-btn{
+                width: 80%;
+            }
+            .add-new-board-btn{
+                width: 20%;
             }
         }
     }
