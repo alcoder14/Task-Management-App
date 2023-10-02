@@ -33,6 +33,12 @@ button{
     font-size: 20px;
     border-radius: 20px;
 }
+@media(max-height: 1000px){
+    button{
+        font-size: 16px;
+        padding: 7px 12px;
+    }
+}
 
 .white-btn{
     background-color: $white;
@@ -80,6 +86,12 @@ button{
     color: $white;
 }
 
+@media(max-width: 1200px){
+    .modal-container .modal-window{
+
+    }
+}
+
 @media(max-width: 768px){
     .modal-container .modal-window{
         min-width: 450px;
@@ -104,6 +116,13 @@ input, textarea{
     outline: none;
     border-radius: 5px;
 }
+
+@media(max-height: 1000px){
+    input, textarea{
+        font-size: 16px;
+        padding: 7px 12px;
+    }
+}   
 
 input::placeholder, textarea::placeholder{
     color: $grey;

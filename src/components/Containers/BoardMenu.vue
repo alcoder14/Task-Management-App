@@ -69,7 +69,7 @@ export default {
             display: none;
         }
     }
-    @media(max-width: 1675px){
+    @media(max-width: 1676px){
         .left-side .burger-icon{
             display: block;
         }

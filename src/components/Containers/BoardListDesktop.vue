@@ -217,13 +217,13 @@ export default {
         },
 
         toggleVisibility(){
-            if(window.innerWidth > 1675){
+            if(window.innerWidth > 1674){
 
                 this.boardListVisible = true
                 this.smallScreenBoardList = false
                 this.paintSelectedBtn(this.boardStore.getBoard)
 
-            } else if (window.innerWidth <= 1675 && this.smallScreenBoardList){
+            } else if (window.innerWidth <= 1674 && this.smallScreenBoardList){
 
                 this.boardListVisible = true
                 
@@ -352,10 +352,10 @@ export default {
                 @include flex-row();
             }
             .board-btn{
-                width: 80%;
+                width: 60%;
             }
             .add-new-board-btn{
-                width: 20%;
+                width: 40%;
             }
         }
     }
