@@ -5,7 +5,7 @@
     -->
     <button class="new-board-btn" @click="toggleModal"> <font-awesome-icon icon="fa-solid fa-plus" /> Add New Board</button>
 
-    <div class="boards-container">
+    <div class="boards-container" v-if="boardList && boardList.length !== 0">
       <button v-for="board in boardList" :key="board" @click="boardSelected(board)" class="board-btn" > {{ board }} </button>
     </div>
   </div>
