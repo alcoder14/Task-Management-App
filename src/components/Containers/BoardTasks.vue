@@ -42,6 +42,7 @@ export default {
         this.sortTasks()
 
         this.emitter.on("refilterTasks", ()=>{
+            console.log("Refiltering")
             this.getCurrentBoard()
             this.getAllTasks()
             this.sortTasks()
@@ -63,8 +64,6 @@ export default {
             this.todoTasks = this.allTasks.filter(task => task.status === 'todo' && task.board === this.currentBoard)
             this.doingTasks = this.allTasks.filter(task => task.status === 'doing' && task.board === this.currentBoard)
             this.doneTasks = this.allTasks.filter(task => task.status === 'done' && task.board === this.currentBoard)
-
-            console.log(this.todoTasks)
         },
 
         // Hide "doing" and "done" columns if screen width is less than number specified

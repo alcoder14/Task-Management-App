@@ -1,8 +1,7 @@
 <template>
     <div class="task-container" @click="toggleEditModal">
         <h2 class="task-title">{{ taskData.title }}</h2>
-        <h4 v-if="doneSubtasks === 0 && totalSubtasks === 0" class="subtask-metadata">No subtasks</h4>
-        <h4 v-else class="subtask-metadata">{{ this.doneSubtasks }} of {{ this.totalSubtasks }} subtasks</h4>
+        <h4 class="task-description">{{ shortenedDescription }}</h4>
     </div>
     <ViewTask :taskData="taskData" v-if="editModalVisible" @closeEditModal="toggleEditModal" />
 </template>
@@ -21,18 +20,16 @@ export default {
     },
     data(){
         return{
-            totalSubtasks: 0,
-            doneSubtasks: 0,
+            shortenedDescription: null,
             editModalVisible: false
         }
     },
     mounted(){
-        this.countSubtasks()
+        this.trimDescription()
     },
     methods:{
-        countSubtasks(){
-            this.totalSubtasks = this.taskData.subtasks.length
-            this.taskData.subtasks.forEach(subtask => subtask.done === true ? this.doneSubtasks++ : this.doneSubtasks)
+        trimDescription(){
+            this.shortenedDescription = this.taskData.description.slice(0, 40)
         },
         toggleEditModal(){
             this.editModalVisible = !this.editModalVisible
@@ -56,7 +53,7 @@ export default {
             margin-bottom: 5px;
             font-size: 36px;
         }
-        .subtask-metadata{
+        .task-description{
             color: $grey;
             font-size: 18px;
         }
@@ -66,7 +63,7 @@ export default {
             .task-title{
             font-size: 26px;
         }
-            .subtask-metadata{
+            .subtask-description{
                 font-size: 16px;
             }
         }

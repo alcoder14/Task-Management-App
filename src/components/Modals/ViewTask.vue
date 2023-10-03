@@ -62,6 +62,7 @@ export default {
             console.log(this.taskDataCopy)
         },
         countSubtasks(){
+            this.doneSubtasksNumber = 0;
             this.taskDataCopy.subtasks.forEach((subtask) => {
                 if(subtask.done == true){
                     this.doneSubtasksNumber++;
@@ -71,6 +72,8 @@ export default {
         },
         updateSubtask(index){
             this.taskDataCopy.subtasks[index].done = !this.taskDataCopy.subtasks[index].done
+            console.log(this.taskDataCopy)
+            this.countSubtasks()
         },
         changeStatus(value){
             this.taskDataCopy.status = value
@@ -83,12 +86,12 @@ export default {
             this.taskIndex = this.taskStorage.findIndex(task => task.id === this.taskDataCopy.id);
 
             this.taskStorage[this.taskIndex] = this.taskDataCopy
+            console.log(this.taskStorage)
 
             localStorage.setItem("TaskItems", JSON.stringify(this.taskStorage))
 
             this.$emit('closeEditModal')
-
-            this.emitter.emit("refilterTasks")
+            this.emitter.emit("refilterTasks")    
 
         }
     }

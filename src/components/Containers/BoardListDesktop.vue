@@ -13,7 +13,7 @@
             <button v-if="!editBoardEnabled" class="board-btn" :class="{'purple': board === boardStore.getBoard}" @click="changeBoard(board)"><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board }}
             </button>
 
-            <!-- Editing boards is enabled - render input only on current board -->
+            <!-- Editing boards is enabled - render input but only on current board -->
             
             <button v-if="editBoardEnabled && board === boardStore.getBoard" class="board-btn purple" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> <input type="text" v-model="newBoardName" class="input-boardname">
             </button>
@@ -311,7 +311,14 @@ export default {
             background-color: $dark;
             @include flex-row();
             z-index: 10;
-
+        }
+        .board-btn:hover{
+            background-color: $light;
+            color: $white;
+        }
+        .add-new-board-btn:hover{
+            background-color: $white;
+            color: $dark;
         }
         .board-btn{
             color: $lightgrey;

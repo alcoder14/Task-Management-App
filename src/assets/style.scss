@@ -32,6 +32,7 @@ button{
     padding: 10px 14px;
     font-size: 20px;
     border-radius: 20px;
+    transition: all 0.3s;
 }
 @media(max-height: 1000px){
     button{
@@ -46,11 +47,24 @@ button{
 }
 .light-purple-btn{
     background-color: $light;
-    color: white;
+    color: $white;
 }
 .dark-purple-btn{
     background-color: $dark;
     color: $light;
+}
+
+.white-btn:hover{
+    background-color: $light;
+    color: $white;
+}
+.light-purple-btn:hover{
+    background-color: $white;
+    color: $light;
+}
+.dark-purple-btn{
+    background-color: $light;
+    color: $dark;
 }
 
 // Modals
@@ -84,12 +98,6 @@ button{
 .modal-title{
     font-size: 20px;
     color: $white;
-}
-
-@media(max-width: 1200px){
-    .modal-container .modal-window{
-
-    }
 }
 
 @media(max-width: 768px){
