@@ -82,12 +82,8 @@ export default {
         }
     },
     mounted(){
-        // FUNCTIONALITY
-        this.getBoardList()
-        this.$nextTick(() => {
-            this.paintSelectedBtn(this.boardStore.getBoard)
-        })
-        this.calculateBoardNumber()
+
+        this.autoSelectBoard()
 
         // RESPONSIVENESS
         this.toggleVisibility()
@@ -95,9 +91,6 @@ export default {
         this.emitter.on('showHiddenBoardList', ()=>{
             this.boardListVisible = true
             this.smallScreenBoardList = true
-            this.$nextTick(() => {
-                this.paintSelectedBtn(this.boardStore.getBoard)
-            })
         })
     },
     methods: {
@@ -116,23 +109,12 @@ export default {
             this.emitter.emit("refilterTasks");
             this.emitter.emit("updateBoardName")
 
-            this.paintSelectedBtn(board)
             this.closeBoardList()
-        },
-        paintSelectedBtn(board){
-            console.log(board)
-            this.buttons = Array.from(document.querySelectorAll(".board-btn"))
-            console.log(this.buttons)
-
-            this.buttons.forEach(button => button.innerText === board ? button.classList.add("purple") : button.classList.remove("purple"))
         },
         refreshBoardList(boardName){
             this.getBoardList()
             this.calculateBoardNumber()
             this.changeBoard(boardName)
-            this.$nextTick(() => {
-                this.paintSelectedBtn(boardName)
-            })
             this.toggleAddBoardModal()
         },
         toggleAddBoardModal(){
@@ -177,9 +159,7 @@ export default {
             this.emitter.emit("updateBoardName")
 
             // Close board editor
-            this.discardEditBoard()
-
-        
+            this.discardEditBoard()        
 
         },
         // this fires when times icon is clicked
@@ -213,7 +193,6 @@ export default {
             this.getBoardList()
             this.calculateBoardNumber()
             this.changeBoard(this.boardList[0])
-            this.paintSelectedBtn(this.boardList[0])
         },
 
         toggleVisibility(){
@@ -221,7 +200,6 @@ export default {
 
                 this.boardListVisible = true
                 this.smallScreenBoardList = false
-                this.paintSelectedBtn(this.boardStore.getBoard)
 
             } else if (window.innerWidth <= 1674 && this.smallScreenBoardList){
 
@@ -349,6 +327,29 @@ export default {
             height: 100vh;
             align-items: center;
             justify-content: center;
+            .board-btn-container{
+                @include flex-column();
+                .board-tools-container{
+                justify-content: center;
+                .tool-btn{
+                    transform: translateX(0);
+                }
+                .tool-btn:hover{
+                    background-color: $light;
+                    color: $white;
+                }
+                .update-board, .confirm-update-board{
+                    border-bottom-left-radius: 10px;
+                    padding-left: 10px;
+                }
+                .delete-board, .discard-update-board{
+                    border-bottom-right-radius: 10px;
+                }
+                .delete-board{
+                    border-top-right-radius: 0;
+                }
+            }
+            }
             .close-btn{
                 display: block;
             }
@@ -359,10 +360,15 @@ export default {
                 @include flex-row();
             }
             .board-btn{
-                width: 60%;
+                max-width: 500px;
+                border-top-left-radius: 60px;
+                border-bottom-left-radius: 60px;
+                justify-content: center;
             }
             .add-new-board-btn{
-                width: 40%;
+                max-width: 500px;
+                justify-content: center;
+                border-radius: 60px;
             }
         }
     }

@@ -2,12 +2,13 @@
     <nav class="navigation">
         <div class="left-side"> 
             <font-awesome-icon icon="fa fa-bars" class="burger-icon" @click="this.emitter.emit('showHiddenBoardList')" />
-            <h1 class="board-title">{{ boardTitle }}</h1>
+            <h1 class="board-title" v-if="this.boardTitle !== undefined">{{ boardTitle }}</h1>
+            <h1 class="board-title" v-else>No Board Selected</h1>
         </div>
-        <button class="light-purple-btn" @click="toggleModal"> <font-awesome-icon icon="fa fa-plus" /> Add New Task</button>
+        <button v-if="this.boardTitle !== undefined" class="light-purple-btn" @click="toggleModal"> <font-awesome-icon icon="fa fa-plus" /> Add New Task</button>
     </nav>
 
-    <AddTask v-if="addTaskVisible" @onclose="toggleModal" @ontaskadded="this.$emit('ontaskadded')" />
+    <AddTask v-if="addTaskVisible" @onclose="toggleModal" />
 </template>
 
 <script>
@@ -36,7 +37,6 @@ export default {
     },
     methods: {
         getCurrentBoard(){
-            console.log("hello there")
             this.boardTitle = this.boardStore.getBoard
         },
         toggleModal(){
@@ -68,10 +68,24 @@ export default {
             margin-right: 20px;
             display: none;
         }
+        .board-title{
+            font-size: 30px;
+        }
     }
     @media(max-width: 1676px){
         .left-side .burger-icon{
             display: block;
+        }
+    }
+    @media(max-width: 1000px){
+        .navigation{
+            height: 8vh;
+        }
+        .left-side{ 
+            .burger-icon, .board-title{
+                font-size: 24px;
+            }
+            
         }
     }
 </style>

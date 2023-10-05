@@ -14,7 +14,7 @@
 
         <div class="input-row">
             <label for="description">Description</label>
-            <textarea v-model="formData.description" id="description" cols="30" rows="10" placeholder="e. g. It is always good to take a break. This 15 minute break will recharge the batteries a little"></textarea>
+            <textarea v-model="formData.description" id="description" cols="30" rows="6" placeholder="e. g. It is always good to take a break. This 15 minute break will recharge the batteries a little"></textarea>
         </div>
         
         <div class="input-row">
@@ -102,8 +102,6 @@ export default {
             localStorage.setItem("TaskItems", JSON.stringify(this.taskStorage))
 
             console.log(this.taskStorage)
-
-            this.$emit('ontaskadded')
 
             this.emitter.emit("refilterTasks")
             this.closeModal()

@@ -54,7 +54,7 @@ export default {
     methods: {
         getCurrentBoard(){
             this.currentBoard = this.boardStore.getBoard
-            console.log(this.currentBoard)
+            console.log("Current board is " + this.currentBoard)
         },
         getAllTasks(){
             this.allTasks = JSON.parse(localStorage.getItem("TaskItems"));

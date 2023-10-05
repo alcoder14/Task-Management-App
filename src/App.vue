@@ -1,10 +1,8 @@
 <template>
-    <StartingScreen @onboardcreated="toggleVisibility" v-if="startingScreenVisible" @onboardselected="toggleVisibility" />
-    <MainScreen v-if="!startingScreenVisible" />
+    <MainScreen />
 </template>
 
 <script>
-  import StartingScreen from "./components/Screens/StartingScreen.vue";
   import MainScreen from "./components/Screens/MainScreen.vue";
 
   import { useBoardStore } from "./stores/boardStore";
@@ -12,20 +10,13 @@
   export default{
     name: "App",
     components: {
-      StartingScreen,
       MainScreen
     },
     data(){
       return{
-        startingScreenVisible: true,
         boards: [],
         boardStore: useBoardStore()
       }
-    },
-    methods: {
-      toggleVisibility(){
-        this.startingScreenVisible = !this.startingScreenVisible
-      },
     },
     mounted(){
 
