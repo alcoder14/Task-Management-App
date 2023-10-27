@@ -143,6 +143,11 @@ export default {
     .unselected{
         background-color: $darkest !important;
     }
+    @media(max-width: 1000px){
+        .tasks-layout{
+            min-height: 92vh;
+        }
+    }
     @media(max-width: 768px){
         .tasks-layout{
             grid-template-columns: 100%;

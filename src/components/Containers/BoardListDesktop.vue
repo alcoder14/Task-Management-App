@@ -1,6 +1,8 @@
 <template>
-    <div class="boards-container" v-if="boardListVisible === true">
-        <button class="close-btn" @click="closeBoardList"><font-awesome-icon icon="fa fa-times" /></button>
+    <div class="boards-container" :class="{'show-animation': showAnimationActive === true, 'hide-animation': hideAnimationActive === true}" v-if="boardListVisible === true">
+        <div class="close-btn-container">
+            <button class="close-btn" @click="closeBoardList"><font-awesome-icon icon="fa fa-times" /></button>
+        </div>
         <div class="logo-container">
             <img src="../../assets/logo.png" alt="Logo">
         </div>
@@ -46,7 +48,7 @@
 
         <button class="add-new-board-btn" @click="toggleAddBoardModal" :disabled="disableButtons">
             <div class="create-board-text">
-                <font-awesome-icon icon="fa-solid fa-plus" class="icon" />
+                <font-awesome-icon icon="fa-solid fa-plus" class="icon" style="margin-right: 10px;" />
                 Create new board
             </div>
         </button>
@@ -78,18 +80,26 @@ export default {
             smallScreenBoardList: false,
             tasks: null,
             tasksCopy: null,
-            editBoardEnabled: false
+            editBoardEnabled: false,
+
+            showAnimationActive: false,
+            hideAnimationActive: false
         }
     },
     mounted(){
 
         this.autoSelectBoard()
 
-        // RESPONSIVENESS
         this.toggleVisibility()
         window.addEventListener("resize", this.toggleVisibility)
         this.emitter.on('showHiddenBoardList', ()=>{
+
             this.boardListVisible = true
+            this.showAnimationActive = true
+            setTimeout(() => {
+                this.showAnimationActive = false
+            }, 1000);
+            
             this.smallScreenBoardList = true
         })
     },
@@ -211,8 +221,12 @@ export default {
         },
         closeBoardList(){
             if(window.innerWidth <= 1675){
-                this.boardListVisible = false
-                this.smallScreenBoardList = false
+                this.hideAnimationActive = true
+                setTimeout(() => {
+                    this.boardListVisible = false
+                    this.smallScreenBoardList = false
+                    this.hideAnimationActive = false
+                }, 350);
             }
         }
     }
@@ -221,12 +235,39 @@ export default {
 
 <style lang="scss" scoped>
     @import "@/assets/style.scss";
+
+    // Animations for board list
+    .show-animation{
+        animation-name: show-container;
+        animation-duration: 0.4s;
+    }
+    @keyframes show-container{
+        0%{transform: translateX(-100%)}
+        100%{transform: translateX(0)}
+    }
+    .hide-animation{
+        animation-name: hide-container;
+        animation-duration: 0.4s;
+    }
+    @keyframes hide-container{
+        0%{transform: translateX(0)}
+        100%{transform: translateX(-100%)}
+    }
+
+    // Styles
     .boards-container{
         background-color: $dark;
         border-right: 1px solid $grey;
         height: 100vh;
         @include flex-column();
+
+        .close-btn-container{
+            @include flex-row();
+            justify-content: center;
+            width: 100%;            
+        }
         .close-btn{
+            font-size: 20px;
             display: none;
         }
         .logo-container{
@@ -310,6 +351,8 @@ export default {
             justify-content: space-between;
             align-items: center;
             color: $light;
+            width: 80%;
+            margin-top: 20px;
         }
         .purple {
             background-color: $light;
@@ -323,53 +366,27 @@ export default {
             z-index: 50;
             left: 0;
             top: 0;
-            width: 100%;
+            width: 500px;
             height: 100vh;
-            align-items: center;
-            justify-content: center;
-            .board-btn-container{
-                @include flex-column();
-                .board-tools-container{
-                justify-content: center;
-                .tool-btn{
-                    transform: translateX(0);
-                }
-                .tool-btn:hover{
-                    background-color: $light;
-                    color: $white;
-                }
-                .update-board, .confirm-update-board{
-                    border-bottom-left-radius: 10px;
-                    padding-left: 10px;
-                }
-                .delete-board, .discard-update-board{
-                    border-bottom-right-radius: 10px;
-                }
-                .delete-board{
-                    border-top-right-radius: 0;
-                }
-            }
-            }
+            align-items: flex-start;
+            justify-content: flex-start;
+            padding-top: 100px;
+            background-color: #1f1f25;
             .close-btn{
                 display: block;
             }
             .logo-container{
                 display: none;
             }
-            .board-btn, .add-new-board-btn{
-                @include flex-row();
-            }
-            .board-btn{
-                max-width: 500px;
-                border-top-left-radius: 60px;
-                border-bottom-left-radius: 60px;
-                justify-content: center;
-            }
             .add-new-board-btn{
-                max-width: 500px;
-                justify-content: center;
-                border-radius: 60px;
+                width: 64%;
             }
+        }
+    }
+
+    @media(max-width: 520px){
+        .boards-container{
+            width: 80%;
         }
     }
     
