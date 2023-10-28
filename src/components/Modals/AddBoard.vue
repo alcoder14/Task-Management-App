@@ -11,6 +11,7 @@
 <script>
 
 import { useBoardStore } from "@/stores/boardStore";
+import { formatDate } from "@/CustomJS/methods";
 
 export default {
     name: "AddBoard",
@@ -18,7 +19,12 @@ export default {
         return{
             inputText: "",
             boardList: null,
-            boardStore: useBoardStore()
+            boardStore: useBoardStore(),
+            boardData: {
+                name: "",
+                date: null,
+                time: null
+            }
         }
     },
     methods: {
@@ -29,14 +35,18 @@ export default {
             
         },
         confirm(value){
-            console.log(value)
+
+            this.boardData.name = value
+            this.boardData.date = formatDate(new Date())
+            this.boardData.time = new Date().toLocaleTimeString()
 
             this.boardList = JSON.parse(localStorage.getItem("boards"))
-            this.boardList.push(value)
+            this.boardList.push(this.boardData)
             localStorage.setItem("boards", JSON.stringify(this.boardList))
 
-            this.boardStore.updateSelectedBoard(value)
 
+            // Set new board to store and signal it to other components
+            this.boardStore.updateSelectedBoard(value)
             this.$emit("boardadded", value)
         }
     }

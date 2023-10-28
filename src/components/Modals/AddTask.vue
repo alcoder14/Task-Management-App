@@ -37,6 +37,7 @@
 
 import DropdownComponent from '../Elements/DropdownComponent.vue';
 import { useBoardStore } from '@/stores/boardStore';
+import { formatDate } from '@/CustomJS/methods'
 
 import { v4 as uuidv4 } from 'uuid'
 
@@ -96,7 +97,7 @@ export default {
             this.formData.subtasks = this.subtasks
 
             this.formData.time = new Date().toLocaleTimeString()
-            this.formData.date = this.formatDate(new Date())
+            this.formData.date = formatDate(new Date())
             console.log(this.formData.date)
 
             this.formDataCopy = {...this.formData}
@@ -109,9 +110,6 @@ export default {
 
             this.emitter.emit("refilterTasks")
             this.closeModal()
-        },
-        formatDate(date){
-            return (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear()
         },
         closeModal(){
             this.$emit("onclose")

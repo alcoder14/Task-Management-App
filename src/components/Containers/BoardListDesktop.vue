@@ -12,26 +12,26 @@
 
             <!-- Editing boards is not enabled -->
 
-            <button v-if="!editBoardEnabled" class="board-btn" :class="{'purple': board === boardStore.getBoard}" @click="changeBoard(board)"><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board }}
+            <button v-if="!editBoardEnabled" class="board-btn" :class="{'purple': board.name === boardStore.getBoard}" @click="changeBoard(board.name)"><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board.name }}
             </button>
 
             <!-- Editing boards is enabled - render input but only on current board -->
             
-            <button v-if="editBoardEnabled && board === boardStore.getBoard" class="board-btn purple" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> <input type="text" v-model="newBoardName" class="input-boardname">
+            <button v-if="editBoardEnabled && board.name === boardStore.getBoard" class="board-btn purple" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> <input type="text" v-model="newBoardName" class="input-boardname">
             </button>
 
-            <button v-else-if="editBoardEnabled && board !== boardStore.getBoard" class="board-btn" :disabled="disableButtons" @click="changeBoard(board)" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board }}
+            <button v-else-if="editBoardEnabled && board !== boardStore.getBoard" class="board-btn" :disabled="disableButtons" @click="changeBoard(board.name)" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board.name }}
             </button>
 
             <!-- Tools -->
 
-            <div class="board-tools-container" v-if="board === boardStore.getBoard">
+            <div class="board-tools-container" v-if="board.name === boardStore.getBoard">
 
                 <!-- Render edit and trash icons if board is not being edited -->
 
-                <button v-if="!editBoardEnabled" class="update-board tool-btn" @click="editBoard(board)"><font-awesome-icon icon="fa fa-pen"/></button>
+                <button v-if="!editBoardEnabled" class="update-board tool-btn" @click="editBoard(board.name)"><font-awesome-icon icon="fa fa-pen"/></button>
 
-                <button v-if="!editBoardEnabled" class="delete-board tool-btn" @click="deleteBoard(board)">
+                <button v-if="!editBoardEnabled" class="delete-board tool-btn" @click="deleteBoard(board.name)">
                     <font-awesome-icon icon="fa fa-trash" />
                 </button>
 
@@ -52,6 +52,10 @@
                 Create new board
             </div>
         </button>
+
+        <div class="date-time-container">
+            <p>Board created: {{ selectedBoardDate }} at {{ selectedBoardTime }}</p>
+        </div>
     </div>
 
     <AddBoard v-if="addBoardVisible" @onclosemodal="toggleAddBoardModal" @boardadded="refreshBoardList"/>
@@ -81,6 +85,9 @@ export default {
             tasks: null,
             tasksCopy: null,
             editBoardEnabled: false,
+
+            selectedBoardDate: null,
+            selectedBoardTime: null,
 
             showAnimationActive: false,
             hideAnimationActive: false
@@ -118,6 +125,7 @@ export default {
 
             this.emitter.emit("refilterTasks");
             this.emitter.emit("updateBoardName")
+            this.getCurrentBoardDateAndTime()
 
             this.closeBoardList()
         },
@@ -144,8 +152,6 @@ export default {
 
             // Rename boards with new name in task objects 
             this.tasks = JSON.parse(localStorage.getItem("TaskItems"))
-            console.log(this.tasks)
-            console.log(newBoardName)
 
             this.tasks.forEach((task) => {
                 if(task.board === this.boardStore.getBoard){
@@ -153,13 +159,12 @@ export default {
                 }
             })
 
-            console.log(this.tasks)
-
             localStorage.setItem("TaskItems", JSON.stringify(this.tasks))
             
             // Update boards list
-            this.boardList[this.boardList.indexOf(this.boardStore.getBoard)] = newBoardName
+            this.boardList[this.boardList.findIndex(item => item.name === this.boardStore.getBoard)].name = newBoardName
             localStorage.setItem("boards", JSON.stringify(this.boardList))
+
 
             // Set new current board
             this.boardStore.updateSelectedBoard(newBoardName)
@@ -187,7 +192,7 @@ export default {
         // DELETE BOARDS
         deleteBoard(boardName){
             // Delete board
-            this.boardList = this.boardList.filter(board => board !== boardName)
+            this.boardList = this.boardList.filter(board => board.name !== boardName)
             localStorage.setItem("boards", JSON.stringify(this.boardList))
 
             // Delete tasks associated with board
@@ -202,7 +207,7 @@ export default {
         autoSelectBoard(){
             this.getBoardList()
             this.calculateBoardNumber()
-            this.changeBoard(this.boardList[0])
+            this.changeBoard(this.boardList[0].name)
         },
 
         toggleVisibility(){
@@ -228,7 +233,20 @@ export default {
                     this.hideAnimationActive = false
                 }, 350);
             }
+        },
+
+        getCurrentBoardDateAndTime(){
+
+            // Get Date and Time of creation of the selected board
+            this.selectedBoardDate = this.boardList[this.boardList.findIndex(board => board.name === this.boardStore.getBoard)].date
+
+            this.selectedBoardTime = this.boardList[this.boardList.findIndex(board => board.name === this.boardStore.getBoard)].time
+
+            console.log(this.selectedBoardDate)
+            console.log(this.selectedBoardTime)
+
         }
+
     }
 }
 </script>
@@ -357,6 +375,13 @@ export default {
         .purple {
             background-color: $light;
             color: $white;
+        }
+        .date-time-container{
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            padding: 2rem;
+            color: $lightgrey;
         }
     }
     
