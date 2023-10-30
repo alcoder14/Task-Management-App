@@ -53,7 +53,7 @@
             </div>
         </button>
 
-        <div class="date-time-container">
+        <div class="date-time-container" v-if="selectedBoardDate !== null">
             <p>Board created: {{ selectedBoardDate }} at {{ selectedBoardTime }}</p>
         </div>
     </div>
@@ -125,6 +125,7 @@ export default {
 
             this.emitter.emit("refilterTasks");
             this.emitter.emit("updateBoardName")
+            
             this.getCurrentBoardDateAndTime()
 
             this.closeBoardList()
@@ -207,7 +208,12 @@ export default {
         autoSelectBoard(){
             this.getBoardList()
             this.calculateBoardNumber()
-            this.changeBoard(this.boardList[0].name)
+
+            if(this.boardList[0] !== undefined){
+                this.changeBoard(this.boardList[0].name)
+            } else {
+                this.changeBoard(undefined)
+            }
         },
 
         toggleVisibility(){
@@ -238,12 +244,14 @@ export default {
         getCurrentBoardDateAndTime(){
 
             // Get Date and Time of creation of the selected board
-            this.selectedBoardDate = this.boardList[this.boardList.findIndex(board => board.name === this.boardStore.getBoard)].date
 
-            this.selectedBoardTime = this.boardList[this.boardList.findIndex(board => board.name === this.boardStore.getBoard)].time
-
-            console.log(this.selectedBoardDate)
-            console.log(this.selectedBoardTime)
+            if(this.boardList.length > 0){
+                this.selectedBoardDate = this.boardList[this.boardList.findIndex(board => board.name === this.boardStore.getBoard)].date
+                this.selectedBoardTime = this.boardList[this.boardList.findIndex(board => board.name === this.boardStore.getBoard)].time
+            } else {
+                this.selectedBoardDate = null
+                this.selectedBoardTime = null
+            }
 
         }
 
