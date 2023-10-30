@@ -125,6 +125,7 @@ export default {
 
             this.emitter.emit("refilterTasks");
             this.emitter.emit("updateBoardName")
+            
             this.getCurrentBoardDateAndTime()
 
             this.closeBoardList()
