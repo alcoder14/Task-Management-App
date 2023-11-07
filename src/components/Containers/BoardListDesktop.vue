@@ -49,7 +49,7 @@
         <button class="add-new-board-btn" @click="toggleAddBoardModal" :disabled="disableButtons">
             <div class="create-board-text">
                 <font-awesome-icon icon="fa-solid fa-plus" class="icon" style="margin-right: 10px;" />
-                Create new board
+                New Board
             </div>
         </button>
 
@@ -418,6 +418,9 @@ export default {
     @media(max-width: 520px){
         .boards-container{
             width: 80%;
+        }
+        .date-time-container{
+            font-size: 0.8rem;
         }
     }
     
