@@ -13,10 +13,7 @@
             <TaskColumn category="DONE" circleColor="green" :tasks="doneTasks" :tasksNumber="doneTasks.length" v-if="doneTasks !== null && show_done" />
         </div>
     </div>
-    <div class="no-boards-container" @click="toggleAddBoardModal" v-else>
-        <font-awesome-icon icon="fa-solid fa-plus" class="plus-icon" />
-        <p class="no-boards-text">Add Board</p>
-    </div>
+    <NoBoards @click="toggleAddBoardModal" v-else />
 
     <AddBoard v-if="addBoardVisible" @onclosemodal="toggleAddBoardModal" @boardadded="emitRefreshBoardList" /> 
 </template>
@@ -26,12 +23,14 @@
 import TaskColumn from './TaskColumn.vue';
 import AddBoard from '../Modals/AddBoard.vue';
 import { useBoardStore } from '../../stores/boardStore'
+import NoBoards from '../Elements/NoBoards.vue';
  
 export default {
     components: {
-        TaskColumn,
-        AddBoard
-    },
+    TaskColumn,
+    AddBoard,
+    NoBoards
+},
     data(){
         return{
             allTasks: [],
@@ -164,25 +163,6 @@ export default {
     }
     .unselected{
         background-color: $darkest !important;
-    }
-
-    .no-boards-container{
-        width: 100%;
-        height: 90vh;
-        background-color: $darkest;
-        @include flex-column();
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        .plus-icon{
-            color: $white;
-            font-size: 3rem;
-        }
-        .no-boards-text{
-            margin-top: 10px;
-            font-size: 2.6rem;
-            color: $light;
-        }
     }
 
     @media(max-width: 1000px){
