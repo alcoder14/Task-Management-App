@@ -73,8 +73,16 @@ export default {
         }
     }
     @media(max-width: 1676px){
-        .left-side .burger-icon{
-            display: block;
+
+        .left-side{
+            .burger-icon{
+                display: block;
+                font-size: 22px;
+            }
+            .board-title{
+                font-size: 22px;
+            }
+
         }
     }
     @media(max-width: 1000px){

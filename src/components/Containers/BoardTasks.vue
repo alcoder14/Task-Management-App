@@ -1,26 +1,36 @@
 <template>
-    <div class="board-column-switch">
-        <button @click="toggleColumns('todo')" class="btn btn-todo" :class="{'selected': this.active_column === 'todo', 'unselected': this.active_column !== 'todo'}">Todo</button>
+    <div class="board-tasks-management-layout" v-if="currentBoard !== undefined">
+        <div class="board-column-switch">
+            <button @click="toggleColumns('todo')" class="btn btn-todo" :class="{'selected': this.active_column === 'todo', 'unselected': this.active_column !== 'todo'}">Todo</button>
 
-        <button @click="toggleColumns('doing')" class="btn btn-doing" :class="{'selected': this.active_column === 'doing', 'unselected': this.active_column !== 'doing'}">Doing</button>
+            <button @click="toggleColumns('doing')" class="btn btn-doing" :class="{'selected': this.active_column === 'doing', 'unselected': this.active_column !== 'doing'}">Doing</button>
 
-        <button @click="toggleColumns('done')" class="btn btn-done" :class="{'selected': this.active_column === 'done', 'unselected': this.active_column !== 'done'}">Done</button>
+            <button @click="toggleColumns('done')" class="btn btn-done" :class="{'selected': this.active_column === 'done', 'unselected': this.active_column !== 'done'}">Done</button>
+        </div>
+        <div class="tasks-layout">
+            <TaskColumn category="TODO" circleColor="blue" :tasks="todoTasks" :tasksNumber="todoTasks.length" v-if="todoTasks !== null && show_todo" />
+            <TaskColumn category="DOING" circleColor="purple" :tasks="doingTasks" :tasksNumber="doingTasks.length" v-if="doingTasks !== null && show_doing" />
+            <TaskColumn category="DONE" circleColor="green" :tasks="doneTasks" :tasksNumber="doneTasks.length" v-if="doneTasks !== null && show_done" />
+        </div>
     </div>
-  <main class="tasks-layout">
-    <TaskColumn category="TODO" circleColor="blue" :tasks="todoTasks" :tasksNumber="todoTasks.length" v-if="todoTasks !== null && show_todo" />
-    <TaskColumn category="DOING" circleColor="purple" :tasks="doingTasks" :tasksNumber="doingTasks.length" v-if="doingTasks !== null && show_doing" />
-    <TaskColumn category="DONE" circleColor="green" :tasks="doneTasks" :tasksNumber="doneTasks.length" v-if="doneTasks !== null && show_done" />
-  </main>
+    <div class="no-boards-container" @click="toggleAddBoardModal" v-else>
+        <font-awesome-icon icon="fa-solid fa-plus" class="plus-icon" />
+        <p class="no-boards-text">Add Board</p>
+    </div>
+
+    <AddBoard v-if="addBoardVisible" @onclosemodal="toggleAddBoardModal"/> 
 </template>
 
 <script>
 
 import TaskColumn from './TaskColumn.vue';
+import AddBoard from '../Modals/AddBoard.vue';
 import { useBoardStore } from '../../stores/boardStore'
  
 export default {
     components: {
-        TaskColumn
+        TaskColumn,
+        AddBoard
     },
     data(){
         return{
@@ -33,8 +43,11 @@ export default {
             show_todo: true,
             show_doing: true,
             show_done: true,
-            active_column: "todo"
+            active_column: "todo",
+
+            addBoardVisible: false
         }
+
     },
     mounted(){
         this.getCurrentBoard()
@@ -59,6 +72,7 @@ export default {
         getAllTasks(){
             this.allTasks = JSON.parse(localStorage.getItem("TaskItems"));
             console.log(this.allTasks)
+            console.log(this.allTasks.length)
         },
         sortTasks(){
             this.todoTasks = this.allTasks.filter(task => task.status === 'todo' && task.board === this.currentBoard)
@@ -98,6 +112,10 @@ export default {
                 this.show_doing = false
                 this.show_done = true
             }
+        },
+
+        toggleAddBoardModal(){
+            this.addBoardVisible = !this.addBoardVisible
         }
     }
 }
@@ -143,6 +161,26 @@ export default {
     .unselected{
         background-color: $darkest !important;
     }
+
+    .no-boards-container{
+        width: 100%;
+        height: 90vh;
+        background-color: $darkest;
+        @include flex-column();
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        .plus-icon{
+            color: $white;
+            font-size: 3rem;
+        }
+        .no-boards-text{
+            margin-top: 10px;
+            font-size: 2.6rem;
+            color: $light;
+        }
+    }
+
     @media(max-width: 768px){
         .tasks-layout{
             grid-template-columns: 100%;
