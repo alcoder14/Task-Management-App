@@ -37,6 +37,7 @@
 
 import DropdownComponent from '../Elements/DropdownComponent.vue';
 import { useBoardStore } from '@/stores/boardStore';
+import { formatDate } from '@/CustomJS/methods'
 
 import { v4 as uuidv4 } from 'uuid'
 
@@ -57,7 +58,9 @@ export default {
                 title: "",
                 description: "",
                 subtasks: [],
-                status: ""
+                status: "",
+                date: null,
+                time: null
             },
             taskStorage: null,
             formDataCopy: null,
@@ -92,10 +95,12 @@ export default {
         saveTask(){
             this.formData.id = uuidv4()
             this.formData.subtasks = this.subtasks
-            this.formDataCopy = {...this.formData}
 
-            console.log(this.formData.id)
-            console.log(this.formDataCopy.board)
+            this.formData.time = new Date().toLocaleTimeString()
+            this.formData.date = formatDate(new Date())
+            console.log(this.formData.date)
+
+            this.formDataCopy = {...this.formData}
 
             this.taskStorage = JSON.parse(localStorage.getItem("TaskItems"));
             this.taskStorage.push(this.formDataCopy)

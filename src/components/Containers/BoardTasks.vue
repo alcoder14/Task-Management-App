@@ -18,7 +18,7 @@
         <p class="no-boards-text">Add Board</p>
     </div>
 
-    <AddBoard v-if="addBoardVisible" @onclosemodal="toggleAddBoardModal"/> 
+    <AddBoard v-if="addBoardVisible" @onclosemodal="toggleAddBoardModal" @boardadded="emitRefreshBoardList" /> 
 </template>
 
 <script>
@@ -44,7 +44,6 @@ export default {
             show_doing: true,
             show_done: true,
             active_column: "todo",
-
             addBoardVisible: false
         }
 
@@ -116,6 +115,11 @@ export default {
 
         toggleAddBoardModal(){
             this.addBoardVisible = !this.addBoardVisible
+            console.log(this.addBoardVisible)
+        },
+        emitRefreshBoardList(value){
+            this.emitter.emit("refreshBoardList", value)
+            this.toggleAddBoardModal()
         }
     }
 }
@@ -181,6 +185,11 @@ export default {
         }
     }
 
+    @media(max-width: 1000px){
+        .tasks-layout{
+            min-height: 92vh;
+        }
+    }
     @media(max-width: 768px){
         .tasks-layout{
             grid-template-columns: 100%;

@@ -25,7 +25,9 @@
                 </div>
             </div>
             <DropdownComponent :selected="taskData.status" @onStatusSelected="changeStatus" />
-            
+            <div class="task-date">
+                <p>Created: {{ taskData.date }} at {{ taskData.time }}</p>
+            </div>
         </div>
     </div>
 </template>
@@ -131,6 +133,9 @@ export default {
     }
     .subtask-done-text{
         text-decoration: line-through;
+        color: $lightgrey;
+    }
+    .task-date{
         color: $lightgrey;
     }
 

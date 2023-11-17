@@ -1,6 +1,8 @@
 <template>
-    <div class="boards-container" v-if="boardListVisible === true">
-        <button class="close-btn" @click="closeBoardList"><font-awesome-icon icon="fa fa-times" /></button>
+    <div class="boards-container" :class="{'show-animation': showAnimationActive === true, 'hide-animation': hideAnimationActive === true}" v-if="boardListVisible === true">
+        <div class="close-btn-container">
+            <button class="close-btn" @click="closeBoardList"><font-awesome-icon icon="fa fa-times" /></button>
+        </div>
         <div class="logo-container">
             <img src="../../assets/logo.png" alt="Logo">
         </div>
@@ -10,26 +12,26 @@
 
             <!-- Editing boards is not enabled -->
 
-            <button v-if="!editBoardEnabled" class="board-btn" :class="{'purple': board === boardStore.getBoard}" @click="changeBoard(board)"><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board }}
+            <button v-if="!editBoardEnabled" class="board-btn" :class="{'purple': board.name === boardStore.getBoard}" @click="changeBoard(board.name)"><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board.name }}
             </button>
 
             <!-- Editing boards is enabled - render input but only on current board -->
             
-            <button v-if="editBoardEnabled && board === boardStore.getBoard" class="board-btn purple" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> <input type="text" v-model="newBoardName" class="input-boardname">
+            <button v-if="editBoardEnabled && board.name === boardStore.getBoard" class="board-btn purple" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> <input type="text" v-model="newBoardName" class="input-boardname">
             </button>
 
-            <button v-else-if="editBoardEnabled && board !== boardStore.getBoard" class="board-btn" :disabled="disableButtons" @click="changeBoard(board)" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board }}
+            <button v-else-if="editBoardEnabled && board !== boardStore.getBoard" class="board-btn" :disabled="disableButtons" @click="changeBoard(board.name)" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board.name }}
             </button>
 
             <!-- Tools -->
 
-            <div class="board-tools-container" v-if="board === boardStore.getBoard">
+            <div class="board-tools-container" v-if="board.name === boardStore.getBoard">
 
                 <!-- Render edit and trash icons if board is not being edited -->
 
-                <button v-if="!editBoardEnabled" class="update-board tool-btn" @click="editBoard(board)"><font-awesome-icon icon="fa fa-pen"/></button>
+                <button v-if="!editBoardEnabled" class="update-board tool-btn" @click="editBoard(board.name)"><font-awesome-icon icon="fa fa-pen"/></button>
 
-                <button v-if="!editBoardEnabled" class="delete-board tool-btn" @click="deleteBoard(board)">
+                <button v-if="!editBoardEnabled" class="delete-board tool-btn" @click="deleteBoard(board.name)">
                     <font-awesome-icon icon="fa fa-trash" />
                 </button>
 
@@ -46,10 +48,14 @@
 
         <button class="add-new-board-btn" @click="toggleAddBoardModal" :disabled="disableButtons">
             <div class="create-board-text">
-                <font-awesome-icon icon="fa-solid fa-plus" class="icon" />
-                Create new board
+                <font-awesome-icon icon="fa-solid fa-plus" class="icon" style="margin-right: 10px;" />
+                New Board
             </div>
         </button>
+
+        <div class="date-time-container" v-if="selectedBoardDate !== null">
+            <p>Board created: {{ selectedBoardDate }} at {{ selectedBoardTime }}</p>
+        </div>
     </div>
 
     <AddBoard v-if="addBoardVisible" @onclosemodal="toggleAddBoardModal" @boardadded="refreshBoardList"/>
@@ -78,19 +84,34 @@ export default {
             smallScreenBoardList: false,
             tasks: null,
             tasksCopy: null,
-            editBoardEnabled: false
+            editBoardEnabled: false,
+
+            selectedBoardDate: null,
+            selectedBoardTime: null,
+
+            showAnimationActive: false,
+            hideAnimationActive: false
         }
     },
     mounted(){
 
         this.autoSelectBoard()
 
-        // RESPONSIVENESS
         this.toggleVisibility()
         window.addEventListener("resize", this.toggleVisibility)
         this.emitter.on('showHiddenBoardList', ()=>{
+
             this.boardListVisible = true
+            this.showAnimationActive = true
+            setTimeout(() => {
+                this.showAnimationActive = false
+            }, 1000);
+            
             this.smallScreenBoardList = true
+        })
+
+        this.emitter.on('refreshBoardList', (board)=>{
+            this.refreshBoardList(board)
         })
     },
     methods: {
@@ -108,6 +129,8 @@ export default {
 
             this.emitter.emit("refilterTasks");
             this.emitter.emit("updateBoardName")
+            
+            this.getCurrentBoardDateAndTime()
 
             this.closeBoardList()
         },
@@ -115,7 +138,7 @@ export default {
             this.getBoardList()
             this.calculateBoardNumber()
             this.changeBoard(boardName)
-            this.toggleAddBoardModal()
+            this.addBoardVisible = false
         },
         toggleAddBoardModal(){
             this.addBoardVisible = !this.addBoardVisible
@@ -134,8 +157,6 @@ export default {
 
             // Rename boards with new name in task objects 
             this.tasks = JSON.parse(localStorage.getItem("TaskItems"))
-            console.log(this.tasks)
-            console.log(newBoardName)
 
             this.tasks.forEach((task) => {
                 if(task.board === this.boardStore.getBoard){
@@ -143,13 +164,12 @@ export default {
                 }
             })
 
-            console.log(this.tasks)
-
             localStorage.setItem("TaskItems", JSON.stringify(this.tasks))
             
             // Update boards list
-            this.boardList[this.boardList.indexOf(this.boardStore.getBoard)] = newBoardName
+            this.boardList[this.boardList.findIndex(item => item.name === this.boardStore.getBoard)].name = newBoardName
             localStorage.setItem("boards", JSON.stringify(this.boardList))
+
 
             // Set new current board
             this.boardStore.updateSelectedBoard(newBoardName)
@@ -177,7 +197,7 @@ export default {
         // DELETE BOARDS
         deleteBoard(boardName){
             // Delete board
-            this.boardList = this.boardList.filter(board => board !== boardName)
+            this.boardList = this.boardList.filter(board => board.name !== boardName)
             localStorage.setItem("boards", JSON.stringify(this.boardList))
 
             // Delete tasks associated with board
@@ -192,7 +212,11 @@ export default {
         autoSelectBoard(){
             this.getBoardList()
             this.calculateBoardNumber()
-            this.changeBoard(this.boardList[0])
+            if(this.boardList[0] !== undefined){
+                this.changeBoard(this.boardList[0].name)
+            } else {
+                this.changeBoard(undefined)
+            }
         },
 
         toggleVisibility(){
@@ -211,22 +235,67 @@ export default {
         },
         closeBoardList(){
             if(window.innerWidth <= 1675){
-                this.boardListVisible = false
-                this.smallScreenBoardList = false
+                this.hideAnimationActive = true
+                setTimeout(() => {
+                    this.boardListVisible = false
+                    this.smallScreenBoardList = false
+                    this.hideAnimationActive = false
+                }, 350);
             }
+        },
+
+        getCurrentBoardDateAndTime(){
+
+            // Get Date and Time of creation of the selected board
+            if(this.boardList.length > 0){
+                this.selectedBoardDate = this.boardList[this.boardList.findIndex(board => board.name === this.boardStore.getBoard)].date
+                this.selectedBoardTime = this.boardList[this.boardList.findIndex(board => board.name === this.boardStore.getBoard)].time
+            } else {
+                this.selectedBoardDate = null
+                this.selectedBoardTime = null
+            }
+
         }
+
     }
 }
 </script>
 
 <style lang="scss" scoped>
     @import "@/assets/style.scss";
+
+    // Animations for board list
+    .show-animation{
+        animation-name: show-container;
+        animation-duration: 0.4s;
+    }
+    @keyframes show-container{
+        0%{transform: translateX(-100%)}
+        100%{transform: translateX(0)}
+    }
+    .hide-animation{
+        animation-name: hide-container;
+        animation-duration: 0.4s;
+    }
+    @keyframes hide-container{
+        0%{transform: translateX(0)}
+        100%{transform: translateX(-100%)}
+    }
+
+    // Styles
     .boards-container{
         background-color: $dark;
         border-right: 1px solid $grey;
         height: 100vh;
         @include flex-column();
+
+        .close-btn-container{
+            @include flex-row();
+            justify-content: center;
+            width: 100%;            
+        }
         .close-btn{
+            font-size: 20px;
             display: none;
         }
         .logo-container{
@@ -310,10 +379,19 @@ export default {
             justify-content: space-between;
             align-items: center;
             color: $light;
+            width: 80%;
+            margin-top: 20px;
         }
         .purple {
             background-color: $light;
             color: $white;
+        }
+        .date-time-container{
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            padding: 2rem;
+            color: $lightgrey;
         }
     }
     
@@ -323,53 +401,30 @@ export default {
             z-index: 50;
             left: 0;
             top: 0;
-            width: 100%;
+            width: 500px;
             height: 100vh;
-            align-items: center;
-            justify-content: center;
-            .board-btn-container{
-                @include flex-column();
-                .board-tools-container{
-                justify-content: center;
-                .tool-btn{
-                    transform: translateX(0);
-                }
-                .tool-btn:hover{
-                    background-color: $light;
-                    color: $white;
-                }
-                .update-board, .confirm-update-board{
-                    border-bottom-left-radius: 10px;
-                    padding-left: 10px;
-                }
-                .delete-board, .discard-update-board{
-                    border-bottom-right-radius: 10px;
-                }
-                .delete-board{
-                    border-top-right-radius: 0;
-                }
-            }
-            }
+            align-items: flex-start;
+            justify-content: flex-start;
+            padding-top: 100px;
+            background-color: #1f1f25;
             .close-btn{
                 display: block;
             }
             .logo-container{
                 display: none;
             }
-            .board-btn, .add-new-board-btn{
-                @include flex-row();
-            }
-            .board-btn{
-                max-width: 500px;
-                border-top-left-radius: 60px;
-                border-bottom-left-radius: 60px;
-                justify-content: center;
-            }
             .add-new-board-btn{
-                max-width: 500px;
-                justify-content: center;
-                border-radius: 60px;
+                width: 64%;
             }
+        }
+    }
+
+    @media(max-width: 520px){
+        .boards-container{
+            width: 80%;
+        }
+        .date-time-container{
+            font-size: 0.8rem;
         }
     }
     
