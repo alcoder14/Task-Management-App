@@ -31,4 +31,19 @@ export default {
             color: $light;
         }
     }
+    @media(max-width: 1000px){
+        .no-boards-container{
+            height: 92vh;
+        }
+    }
+    @media(max-width: 700px){
+        .no-boards-container{
+            .plus-icon{
+                font-size: 2.5rem;
+            }
+            .no-boards-text{
+                font-size: 2.1rem;
+            }
+        }
+    }
 </style>

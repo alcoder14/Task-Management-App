@@ -17,7 +17,7 @@
 
             <!-- Editing boards is enabled - render input but only on current board -->
             
-            <button v-if="editBoardEnabled && board.name === boardStore.getBoard" class="board-btn purple" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> <input type="text" v-model="newBoardName" class="input-boardname">
+            <button v-if="editBoardEnabled && board.name === boardStore.getBoard" class="board-btn purple" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> <input type="text" v-model="newBoardName" class="input-boardname" :class="{'input-error': inputError !== null}">
             </button>
 
             <button v-else-if="editBoardEnabled && board !== boardStore.getBoard" class="board-btn" :disabled="disableButtons" @click="changeBoard(board.name)" ><font-awesome-icon icon="fa-solid fa-table-cells-large" class="icon" /> {{ board.name }}
@@ -64,6 +64,7 @@
 <script>
 
 import { useBoardStore } from '@/stores/boardStore'
+import { checkNameAvailability } from '@/CustomJS/methods'
 import AddBoard from '../Modals/AddBoard.vue'
 
 export default {
@@ -90,7 +91,9 @@ export default {
             selectedBoardTime: null,
 
             showAnimationActive: false,
-            hideAnimationActive: false
+            hideAnimationActive: false,
+
+            inputError: null
         }
     },
     mounted(){
@@ -154,6 +157,10 @@ export default {
         },
         // this fires when check icon is clicked
         confirmEditBoard(newBoardName){
+
+            this.inputError = null
+            this.inputError = checkNameAvailability(newBoardName)
+            if(this.inputError !== null) return
 
             // Rename boards with new name in task objects 
             this.tasks = JSON.parse(localStorage.getItem("TaskItems"))
@@ -393,6 +400,10 @@ export default {
             padding: 2rem;
             color: $lightgrey;
         }
+    }
+
+    .input-error{
+        border: 2px rgb(177, 48, 48) solid;
     }
     
     @media(max-width: 1675px){

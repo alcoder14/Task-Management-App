@@ -1,6 +1,6 @@
 <template>
     <div class="modal-container" @click="closeModal($event)">
-        <form class="modal-window"> 
+        <form class="modal-window" @submit.prevent="saveBoard(inputText)"> 
             <div class="upper-row-container">
                 <h1 class="modal-title">Add New Board</h1>
                 <button class="close-btn" @click="this.$emit('onclosemodal')"><font-awesome-icon icon="fa fa-xmark" /></button>
@@ -9,7 +9,7 @@
                 <p>{{ errorMessage }}</p>
             </div>
             <input type="text" style="margin-bottom: 20px;" placeholder="Board Name" class="board-name-input" v-model="inputText">
-            <button class="white-btn" @click="saveBoard(inputText)">Confirm</button>
+            <button class="white-btn" type="submit">Confirm</button>
         </form>
     </div>
 </template>
@@ -17,7 +17,7 @@
 <script>
 
 import { useBoardStore } from "@/stores/boardStore";
-import { formatDate } from "@/CustomJS/methods";
+import { checkNameAvailability, formatDate } from "@/CustomJS/methods";
 
 export default {
     name: "AddBoard",
@@ -45,20 +45,17 @@ export default {
 
             this.errorMessage = null
 
-            this.boardList = JSON.parse(localStorage.getItem("boards"))
-
-            this.boardList.forEach((board) => {
-                if(board.name === value){
-                    this.errorMessage = "Board with this name already exists";
-                }
-            })
-
+            // Check for errors
+            this.errorMessage = checkNameAvailability(value)
             if(this.errorMessage !== null) return;
 
+            // Save data to board object
             this.boardData.name = value
             this.boardData.date = formatDate(new Date())
             this.boardData.time = new Date().toLocaleTimeString()
 
+            // Save board object to local storage
+            this.boardList = JSON.parse(localStorage.getItem("boards"))
             this.boardList.push(this.boardData)
             localStorage.setItem("boards", JSON.stringify(this.boardList))
 
@@ -79,7 +76,8 @@ export default {
         margin-bottom: 20px;
     }
     .error-message{
-        width: 75%;
+        display: inline-block;
+        width: fit-content;
         background-color: rgb(177, 48, 48);
         color: $white;
         padding: 5px;
